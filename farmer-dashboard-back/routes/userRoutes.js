@@ -5,10 +5,34 @@ import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
+import path from "path";
+import fs from "fs";
+import multer from "multer";
+import mongoose from 'mongoose';
 dotenv.config(); // Load .env file
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
+
+
+// Ensure upload directory exists
+const uploadDir = path.resolve('uploads/profile-pics');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Multer storage setup
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `${req.params._id}-${Date.now()}${ext}`);
+  },
+});
+const upload = multer({ storage });
+
 
 // Email transporter setup
 const transporter = nodemailer.createTransport({
@@ -89,6 +113,7 @@ router.get('/verify-email', async (req, res) => {
 
 // Login route
 router.post('/login', async (req, res) => {
+  console.log('req.body:', req.body);
   const { emailOrUsername, password } = req.body;  // changed here
 
   try {
@@ -174,5 +199,59 @@ router.post('/reset-password/:token', async (req, res) => {
 
 
 
+router.get("/:_id", async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params._id)) {
+      return res.status(400).json({ message: "Invalid user ID format" });
+    }
+    
+    const user = await User.findById(req.params._id);
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+    
+    res.json(user);
+  } catch (err) {
+    console.error("Error details:", err); // More detailed error logging
+    res.status(500).json({ 
+      message: "Error fetching profile", 
+      error: err.message,
+      receivedId: req.params._id // Include the received ID in the response
+    });
+  }
+});
+
+
+
+// Update user data by ID
+router.put('/:_id', upload.single('profilePicture'), async (req, res) => {
+  try {
+    const userId = req.params._id;
+    const updateData = {
+      username: req.body.username,
+      email: req.body.email,
+      age: req.body.age,
+      job: req.body.job,
+      bio: req.body.bio,
+    };
+
+    // Handle uploaded file if present
+    if (req.file) {
+      updateData.profilePicture = `/uploads/profile-pics/${req.file.filename}`;
+    }
+
+    // Find user and update
+    const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.json({
+      message: 'Profile updated successfully',
+      user,
+    });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ message: 'Failed to update profile', error: error.message });
+  }
+});
 
 export default router;

@@ -8,6 +8,10 @@ const userSchema = new mongoose.Schema({
   verified: { type: Boolean, default: false },
   resetToken: { type: String },
   resetTokenExpires: { type: Date },
+  job: { type: String, default: ""},
+  bio: { type: String, default: "" },
+  profilePicture: { type: String, default: "" }, // store URL or filename/path
+  age: {type: Number}
 
 });
 

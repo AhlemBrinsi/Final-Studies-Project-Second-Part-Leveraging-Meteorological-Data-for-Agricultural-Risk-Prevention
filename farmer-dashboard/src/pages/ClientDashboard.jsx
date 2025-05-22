@@ -1,17 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import ClientProfile from './ClientProfile.jsx'; 
 import DashboardMain from './DashboardMain.jsx';
-import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 export default function ClientDashboard() {
-   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const [activeView, setActiveView] = useState("dashboard");
 
+
+  // ✅ Handle missing user data (page refresh case)
+  const { state } = useLocation();
+  const user = state?.user; // Gets user data from navigation state
   const handleLogout = () => {
-    localStorage.removeItem('user'); // Clear saved user data
+    //localStorage.removeItem('user'); // Clear saved user data
     navigate('/'); // Redirect to login
   };
 
@@ -61,17 +66,23 @@ export default function ClientDashboard() {
             />
           )}
 
-          {/* Profile + Dropdown */}
+           {/* Profile + Dropdown */}
           <div ref={dropdownRef} className="relative">
             <img
-              className="w-10 h-10 rounded-full cursor-pointer"
-              src="https://i.pravatar.cc/40"
-              alt="User Profile"
+              src="ava.jpg" 
+              alt="Avatar" 
+              style={{ width: '50px', height: '50px', borderRadius: '50%' }} 
               onClick={() => setDropdownOpen(!dropdownOpen)}
             />
-{dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-10">
-              <a href="#" className="hover:opacity-100 flex items-center px-2 space-x-2">
+            {dropdownOpen && (
+              <div className="absolute right-0 mt-2 w-40 rounded-md shadow-lg z-10">
+              <button
+                onClick={() => {
+                  setActiveView("profile");
+                  setDropdownOpen(false); // Optional: close the dropdown after clicking
+                }}
+                className="hover:opacity-100 flex items-center px-2 space-x-2 w-full text-left"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -87,33 +98,19 @@ export default function ClientDashboard() {
                   />
                 </svg>
                 <span>Profile</span>
-              </a>
-
-              <a href="#" className="hover:opacity-100 flex items-center px-2 space-x-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z"
-                  />
+              </button>
+              <button
+                onClick={handleLogout}
+                className="hover:opacity-100 flex items-center px-2 space-x-2 w-full text-left"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
                 </svg>
-                <span>Settings</span>
-              </a>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </div>
+                <span>Logout</span>
+              </button>
+              </div>
               )}
+
           </div>
         </div>
       </header>
@@ -194,10 +191,19 @@ export default function ClientDashboard() {
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
           <main className="flex-1 p-6 overflow-auto">
-            <h1 className="text-2xl font-semibold mb-6">Performance</h1>
-            <div className="bg-gray-100 rounded-lg p-4 shadow mb-6">
-              <DashboardMain />
-            </div>
+            {activeView === "dashboard" && (
+                <>
+                  <h1 className="text-2xl font-semibold mb-6">Performance</h1>
+                    <div className="bg-gray-100 rounded-lg p-4 shadow mb-6">
+                      <DashboardMain />
+                    </div>
+                  </>
+            )}
+            {activeView === "profile" && (
+                <div className="bg-gray-100 rounded-lg p-4 shadow mb-6">
+                      <ClientProfile user={user} />
+                </div>
+            )}
           </main>
         </div>
       </div>
