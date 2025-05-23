@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ClientProfile from './ClientProfile.jsx'; 
 import DashboardMain from './DashboardMain.jsx';
 import { useLocation } from 'react-router-dom';
-
+import ViewArticles from './ViewArticles.jsx';
 export default function ClientDashboard() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -147,8 +147,15 @@ export default function ClientDashboard() {
               <span>Recommandations</span>
             </a>
 
-            <a href="#" className="hover:opacity-100 block px-2 flex items-center space-x-3">
-              {/* Articles icon */}
+            <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveView("view-articles");
+                  setDropdownOpen(false);
+                }}
+                className="hover:opacity-100 block px-2 flex items-center space-x-2"
+            >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -202,6 +209,11 @@ export default function ClientDashboard() {
             {activeView === "profile" && (
                 <div className="bg-gray-100 rounded-lg p-4 shadow mb-6">
                       <ClientProfile user={user} />
+                </div>
+            )}
+            {activeView === "view-articles" && (
+                <div className="bg-gray-100 rounded-lg p-4 shadow mb-6">
+                      <ViewArticles />
                 </div>
             )}
           </main>

@@ -133,7 +133,7 @@ return (
                 ? profile.profilePicture.startsWith("/uploads")
                   ? `http://localhost:5000${profile.profilePicture}`
                   : profile.profilePicture
-                : "/avatar.jpg"
+                : "/ava.jpg"
             }
             alt="Profile"
             className="w-20 h-20 rounded-full object-cover"

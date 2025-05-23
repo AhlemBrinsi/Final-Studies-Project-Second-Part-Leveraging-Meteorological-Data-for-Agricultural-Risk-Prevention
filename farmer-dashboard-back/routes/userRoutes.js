@@ -9,6 +9,7 @@ import path from "path";
 import fs from "fs";
 import multer from "multer";
 import mongoose from 'mongoose';
+import { verifyToken } from '../middleware/auth.js';
 dotenv.config(); // Load .env file
 
 const router = express.Router();
@@ -114,7 +115,7 @@ router.get('/verify-email', async (req, res) => {
 // Login route
 router.post('/login', async (req, res) => {
   console.log('req.body:', req.body);
-  const { emailOrUsername, password } = req.body;  // changed here
+  const { emailOrUsername, password } = req.body;
 
   try {
     const user = await User.findOne({
@@ -123,6 +124,7 @@ router.post('/login', async (req, res) => {
         { username: emailOrUsername }
       ]
     });
+
     if (!user) return res.status(400).json({ message: 'User not found' });
 
     if (!user.verified) return res.status(403).json({ message: 'Email not verified' });
@@ -130,14 +132,27 @@ router.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
 
-    res.status(200).json({
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ message: 'Server configuration error' });
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    return res.status(200).json({
       message: 'Login successful',
-      user: { id: user._id, email: user.email, role: user.role, username: user.username },
+      token, // Send the token for client to use
+      user: {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+        username: user.username
+      },
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 });
+
 
 
 
@@ -251,6 +266,49 @@ router.put('/:_id', upload.single('profilePicture'), async (req, res) => {
   } catch (error) {
     console.error('Error updating profile:', error);
     res.status(500).json({ message: 'Failed to update profile', error: error.message });
+  }
+});
+
+
+router.get('/', async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch users' });
+  }
+});
+
+// Update verification status
+router.patch('/:_id/verify', async (req, res) => {
+  try {
+    const updated = await User.findByIdAndUpdate(req.params._id, {
+      verified: req.body.verified
+    }, { new: true });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating verification' });
+  }
+});
+
+// Delete user
+router.delete('/:_id', async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params._id);
+    res.json({ message: 'User deleted' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error deleting user' });
+  }
+});
+
+// Add this route at the bottom of userRoutes.js
+router.get('/me',verifyToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password'); // Exclude password
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 

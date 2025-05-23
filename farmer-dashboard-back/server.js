@@ -1,6 +1,8 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import User from './models/user.js'; 
+import articlesRoutes from './routes/ArticlesRoutes.js';
+
 import path from 'path';
 
 import cors from 'cors';
@@ -30,6 +32,7 @@ mongoose.connect(process.env.MONGO_URL, {
 .catch((err) => console.error(err));
 app.use('/uploads', express.static(path.resolve('uploads')));
 
+app.use('/api/articles', articlesRoutes);
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

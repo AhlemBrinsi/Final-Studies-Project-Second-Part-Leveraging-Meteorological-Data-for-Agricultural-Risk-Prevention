@@ -22,6 +22,7 @@ export default function Login() {
       });
 
       const data = await response.json();
+      localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       localStorage.setItem('userId', data.user.id); // Now correctly set
       //localStorage.setItem('userEmail', data.user.email); // or username

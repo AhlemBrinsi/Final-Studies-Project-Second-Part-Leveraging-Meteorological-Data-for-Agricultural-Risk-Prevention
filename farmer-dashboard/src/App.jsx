@@ -10,10 +10,16 @@ import ResetPassword from './pages/ResetPassword.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
 import OwnerProfile from './pages/OwnerProfile.jsx';
 import ClientProfile from './pages/ClientProfile.jsx';
+import UserManagement from './pages/UserManagement.jsx'; 
+import ArticlesDashboard from './pages/ArticlesDashboard.jsx';
+import ViewArticles from './pages/ViewArticles.jsx';
 export default function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/view-articles" element={<ViewArticles />} />
+        <Route path="/articles" element={<ArticlesDashboard />} />
+        <Route path="/user_management" element={<UserManagement />} />
         <Route path="/client-profile" element={<ClientProfile />} />
         <Route path="/owner-profile" element={<OwnerProfile />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
