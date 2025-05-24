@@ -84,12 +84,25 @@ const fetchCurrentUser = async () => {
         {articles.map((article) => (
           <li key={article._id} className="mb-4 border p-3 rounded">
             <div>
-              <p><strong>Title:</strong> {article.title}</p>
-              <p><strong>Author:</strong> {article.authorName}</p>
-              <p><strong>Source:</strong> {article.sourceName}</p>
-              <p><strong>Published Date:</strong> {new Date(article.publishedDate).toLocaleDateString()}</p>
-              <p><strong>Publisher:</strong> {article.owner?.username || 'Unknown'}</p>
-              <p><strong>Content:</strong> {article.content}</p>
+<p><strong>Title:</strong> {article.title}</p>
+                <p><strong>Author:</strong> {article.authorName}</p>
+                <p><strong>Published Date:</strong> {article.publishedDate ? article.publishedDate.slice(0,10) : 'N/A'}</p>
+                <p><strong>Source:</strong> {article.sourceName}</p>
+                <p><strong>Publisher:</strong> {article.owner?.username || 'Unknown'}</p>
+                <p><strong>Content:</strong> 
+                  {' '}
+                  {article.content ? (
+                    typeof article.content === 'string' && article.content.startsWith('http') ? (
+                      <a href={article.content} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                        {article.content}
+                      </a>
+                    ) : (
+                      article.content
+                    )
+                  ) : (
+                    'No content'
+                  )}
+                </p>
             </div>
 
             <button

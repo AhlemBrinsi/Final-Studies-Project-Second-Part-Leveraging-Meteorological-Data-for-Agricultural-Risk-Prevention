@@ -96,6 +96,45 @@ router.delete('/:articleId/feedbacks/:feedbackId', verifyToken, async (req, res)
   }
 });
 
+// Update an article (requires auth and ownership)
+/*router.put('/:id', verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+
+    const existingArticle = await article.findById(id);
+    if (!existingArticle) return res.status(404).json({ message: 'Article not found' });
+
+    if (existingArticle.owner.toString() !== req.userId) {
+      return res.status(403).json({ message: 'Not authorized to update this article' });
+    }
+
+    const updatedArticle = await article.findByIdAndUpdate(id, updates, { new: true });
+    res.status(200).json(updatedArticle);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to update article', error: err.message });
+  }
+});*/
+
+// Update an article (requires auth)
+router.put('/:id', verifyToken, async (req, res) => {
+  try {
+    const foundArticle = await article.findById(req.params.id);
+    if (!foundArticle) return res.status(404).json({ message: 'Article not found' });
+
+    if (foundArticle.owner.toString() !== req.userId) {
+      return res.status(403).json({ message: 'Not authorized to update this article' });
+    }
+
+    Object.assign(foundArticle, req.body);
+    await foundArticle.save();
+
+    res.json({ message: 'Article updated successfully', article: foundArticle });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 
 
 
