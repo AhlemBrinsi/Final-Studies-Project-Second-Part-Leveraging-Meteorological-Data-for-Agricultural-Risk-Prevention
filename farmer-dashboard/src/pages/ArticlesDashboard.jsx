@@ -374,6 +374,18 @@ export default function ArticlesDashboard() {
                       </button>
                     </>
                   )}
+                  {article.feedbacks && article.feedbacks.length > 0 && (
+                    <div className="feedbacks mt-4 pl-4 border-l-2 border-gray-300">
+                      <h4 className="font-semibold mb-2">Feedbacks:</h4>
+                      <ul>
+                        {article.feedbacks.map(feedback => (
+                          <li key={feedback._id} className="mb-1">
+                            <strong>{feedback.owner?.username || 'Anonymous'}</strong> ({feedback.rating}/5):  {feedback.comment}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </>
               )}
             </li>
