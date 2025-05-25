@@ -13,10 +13,14 @@ import ClientProfile from './pages/ClientProfile.jsx';
 import UserManagement from './pages/UserManagement.jsx'; 
 import ArticlesDashboard from './pages/ArticlesDashboard.jsx';
 import ViewArticles from './pages/ViewArticles.jsx';
+import AdminSupport from './pages/AdminSupport.jsx';
+import ClientSupport from './pages/ClientSupport.jsx';
 export default function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/client-support" element={<ClientSupport />} />
+        <Route path="/admin-support" element={<AdminSupport />} />
         <Route path="/view-articles" element={<ViewArticles />} />
         <Route path="/articles" element={<ArticlesDashboard />} />
         <Route path="/user_management" element={<UserManagement />} />

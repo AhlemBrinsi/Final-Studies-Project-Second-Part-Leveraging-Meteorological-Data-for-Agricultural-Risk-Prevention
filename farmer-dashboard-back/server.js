@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import articlesRoutes from './routes/ArticlesRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js'; 
+import supportRoutes from "./routes/supportRoutes.js";
 import path from 'path';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -19,6 +20,8 @@ app.use('/uploads', express.static(path.resolve('uploads')));
 app.use('/api/articles', articlesRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/users', userRoutes);
+app.use("/api/support", supportRoutes);
+
 
 //app.use("/api/profile", profileRoutes);
 
