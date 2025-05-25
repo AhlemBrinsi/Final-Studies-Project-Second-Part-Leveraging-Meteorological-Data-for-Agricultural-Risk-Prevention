@@ -56,7 +56,7 @@ export default function ArticlesDashboard() {
     try {
       await axios.post(
         '/api/articles',
-        { title, authorName, publishedDate, sourceName, content,userId },
+        { title, authorName, publishedDate, sourceName, content},
         {
           headers: {
             Authorization: `Bearer ${token}`,

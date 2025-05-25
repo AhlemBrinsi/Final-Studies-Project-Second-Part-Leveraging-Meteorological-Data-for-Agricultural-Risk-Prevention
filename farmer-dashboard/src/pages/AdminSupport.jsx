@@ -5,6 +5,7 @@ import TicketCard from "./TicketCard";
 const AdminSupport = () => {
   const [tickets, setTickets] = useState([]);
   const UserId = localStorage.getItem("userId"); 
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     axios.get("http://localhost:5000/api/support")
@@ -14,17 +15,26 @@ const AdminSupport = () => {
 
   const handleRespond = async (ticketId, responseText) => {
   try {
-    const res = await axios.patch(`http://localhost:5000/api/support/${ticketId}`, {
-      response: responseText,
-      status: "closed",
-    });
+    const res = await axios.patch(
+      `http://localhost:5000/api/support/${ticketId}`,
+      {
+        response: responseText,
+        status: "closed",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     setTickets(prev =>
       prev.map(ticket => ticket._id === ticketId ? res.data : ticket)
     );
   } catch (err) {
     console.error("Error updating ticket:", err);
   }
-  };
+};
+
 
   return (
     <div className="p-6">

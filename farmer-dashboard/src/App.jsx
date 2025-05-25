@@ -15,10 +15,12 @@ import ArticlesDashboard from './pages/ArticlesDashboard.jsx';
 import ViewArticles from './pages/ViewArticles.jsx';
 import AdminSupport from './pages/AdminSupport.jsx';
 import ClientSupport from './pages/ClientSupport.jsx';
+import Logs from './pages/Logs.jsx';
 export default function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/logs" element={<Logs />} />
         <Route path="/client-support" element={<ClientSupport />} />
         <Route path="/admin-support" element={<AdminSupport />} />
         <Route path="/view-articles" element={<ViewArticles />} />

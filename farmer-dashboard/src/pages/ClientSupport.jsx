@@ -6,31 +6,36 @@ const ClientSupport = () => {
   const [message, setMessage] = useState("");
   const [tickets, setTickets] = useState([]);
   const userId = localStorage.getItem("userId");
+  const token = localStorage.getItem('token');
 
   // Submit a new ticket
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const res = await axios.post("http://localhost:5000/api/support", {
-        owner: userId, // ✅ Send valid ObjectId
-        subject,
-        message,
-      });
+  try {
+    const res = await axios.post(
+      "http://localhost:5000/api/support",
+      { subject, message },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
 
-      console.log("Ticket submitted:", res.data);
-      alert("Support ticket submitted successfully!");
-      
-      // Optionally, reload tickets after submitting
-      setSubject("");
-      setMessage("");
-      setTickets(prev => [res.data, ...prev]);
+    console.log("Ticket submitted:", res.data);
+    alert("Support ticket submitted successfully!");
+    
+    setSubject("");
+    setMessage("");
+    setTickets(prev => [res.data, ...prev]);
 
-    } catch (err) {
-      console.error("Error submitting ticket", err);
-      alert("Failed to submit ticket.");
-    }
-  };
+  } catch (err) {
+    console.error("Error submitting ticket", err);
+    alert("Failed to submit ticket.");
+  }
+};
+
 
   // Fetch user's tickets
   useEffect(() => {
