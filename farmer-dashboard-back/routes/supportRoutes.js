@@ -27,7 +27,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // PATCH /api/support/:id - Update ticket (add response or change status)
-/*router.patch("/:id", async (req, res) => {
+router.patch("/:id", async (req, res) => {
   try {
     const { response, status } = req.body;
     const updateFields = {
@@ -48,9 +48,9 @@ router.get("/:id", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Failed to update ticket." });
   }
-});*/
+});
 // In SupportRoutes.js, update PATCH route:
-router.patch("/:id", async (req, res) => {
+/*router.patch("/:id", async (req, res) => {
   try {
     const { response, status, responder } = req.body; // add responder
     const updateFields = {
@@ -72,7 +72,7 @@ router.patch("/:id", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Failed to update ticket." });
   }
-});
+});*/
 
 // (Optional) DELETE /api/support/:id - Delete a ticket
 router.delete("/:id", async (req, res) => {

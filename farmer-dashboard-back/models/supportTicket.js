@@ -8,7 +8,7 @@ const SupportTicketSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   respondedAt: { type: Date },
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
-  responder: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
+  
 });
 
 export default mongoose.model("SupportTicket", SupportTicketSchema);

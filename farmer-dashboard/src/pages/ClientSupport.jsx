@@ -82,7 +82,8 @@ const ClientSupport = () => {
               <p className="text-sm text-gray-400">Status: {ticket.status}</p>
               {ticket.response && (
                 <div className="mt-2 p-2 bg-green-50 border-l-4 border-green-400 text-green-700">
-                  <p><strong>Admin Response:</strong> {ticket.response}</p>
+                  <p><strong>Response from:</strong> {"Support Team"}</p>
+                  <p><strong>Response:</strong> {ticket.response}</p>
                   <p className="text-xs text-gray-400">
                     Responded at: {new Date(ticket.respondedAt).toLocaleString()}
                   </p>

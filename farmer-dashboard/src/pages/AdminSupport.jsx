@@ -4,7 +4,7 @@ import TicketCard from "./TicketCard";
 
 const AdminSupport = () => {
   const [tickets, setTickets] = useState([]);
-  const adminUserId = localStorage.getItem("userId"); 
+  const UserId = localStorage.getItem("userId"); 
 
   useEffect(() => {
     axios.get("http://localhost:5000/api/support")
@@ -12,25 +12,11 @@ const AdminSupport = () => {
       .catch(err => console.error("Failed to fetch tickets", err));
   }, []);
 
-  /*const handleRespond = async (ticketId, responseText) => {
-    try {
-      const res = await axios.patch(`http://localhost:5000/api/support/${ticketId}`, {
-        response: responseText,
-        status: "closed",
-      });
-      setTickets(prev =>
-        prev.map(ticket => ticket._id === ticketId ? res.data : ticket)
-      );
-    } catch (err) {
-      console.error("Error updating ticket:", err);
-    }
-  };*/
   const handleRespond = async (ticketId, responseText) => {
   try {
     const res = await axios.patch(`http://localhost:5000/api/support/${ticketId}`, {
       response: responseText,
       status: "closed",
-      responder: adminUserId,  // send responder id here
     });
     setTickets(prev =>
       prev.map(ticket => ticket._id === ticketId ? res.data : ticket)

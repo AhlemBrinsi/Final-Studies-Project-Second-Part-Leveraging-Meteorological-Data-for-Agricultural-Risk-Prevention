@@ -26,7 +26,7 @@ const TicketCard = ({ ticket, onRespond }) => {
         </div>
       ) : (
         <div className="mt-2 text-green-700">
-          <p><strong>Response from:</strong> {ticket.responder?.username || "Support Team"}</p>
+          <p><strong>Response from:</strong> {"Support Team"}</p>
           <p><strong>Response:</strong> {ticket.response}</p>
           <p className="text-sm text-gray-400">Closed on: {new Date(ticket.respondedAt).toLocaleString()}</p>
         </div>
