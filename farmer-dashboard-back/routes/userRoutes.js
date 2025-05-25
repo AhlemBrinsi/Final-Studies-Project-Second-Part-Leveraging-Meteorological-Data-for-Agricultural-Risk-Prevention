@@ -263,9 +263,9 @@ router.put('/:_id', upload.single('profilePicture'), async (req, res) => {
     await createLog({
       userId: user._id,
       username: user.username,
-      eventType: 'UPDATE',
+      eventType: 'PROFILE_EDIT',
       eventCategory: 'Profile',
-      description: 'User updated their profile',
+      description: 'User edited their profile',
       ipAddress: req.ip,
       severity: 'INFO',
       relatedEntity: 'UserProfile',

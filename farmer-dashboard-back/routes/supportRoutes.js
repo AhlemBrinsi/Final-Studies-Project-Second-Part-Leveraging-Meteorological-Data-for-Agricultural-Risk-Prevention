@@ -53,7 +53,7 @@ router.patch("/:id",verifyToken, async (req, res) => {
             username: req.user.username,
             eventType: 'SUPPORT_EDIT',
             eventCategory: 'Support',
-            description: `Support ticket "${updatedTicket.title}" edited`,
+            description: "Support ticket updated",
             ipAddress: req.ip,
             severity: 'INFO',
             relatedEntity: `Support ticket:${updatedTicket._id}`,
@@ -67,50 +67,21 @@ router.patch("/:id",verifyToken, async (req, res) => {
   }
 });
 
-/*router.patch("/:id", verifyToken, async (req, res) => {
-  try {
-    const { response, status } = req.body;
-    const ticketId = req.params.id;
-
-    const updateFields = {
-      ...(response && { response }),
-      ...(status && { status }),
-      ...(response && { respondedAt: new Date() }),
-    };
-
-    const updatedTicket = await SupportTicket.findByIdAndUpdate(
-      ticketId,
-      updateFields,
-      { new: true }
-    );
-
-    if (!updatedTicket) return res.status(404).json({ error: "Ticket not found." });
-
-    
-
-    res.json(updatedTicket);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to update ticket." });
-  }
-});*/
-
-
-
 // POST /api/support - create new ticket
 router.post("/",verifyToken,  async (req, res) => {
   try {
-    const { owner, subject, message } = req.body;
+    const {subject, message } = req.body;
 
-    if (!owner || !subject || !message) {
+    if (!subject || !message) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
     const newTicket = new SupportTicket({
-      owner,
-      subject,
-      message,
-      status: "open",
-    });
+    owner: req.userId, // ✅ Use from verified JWT
+    subject,
+    message,
+    status: "open",
+  });
 
     const saved = await newTicket.save();
     try {
@@ -121,7 +92,7 @@ router.post("/",verifyToken,  async (req, res) => {
             username: req.user.username,
             eventType: 'SUPPORT_CREATE',
             eventCategory: 'Support',
-            description: `Support ticket "${saved.title}" created`,
+            description: "Support ticket created",
             ipAddress: req.ip,
             severity: 'INFO',
             relatedEntity: `Support ticket :${saved._id}`,
@@ -135,33 +106,6 @@ router.post("/",verifyToken,  async (req, res) => {
     res.status(500).json({ error: "Server error creating ticket" });
   }
 });
-
-/*router.post("/", async (req, res) => {
-  try {
-    const { owner, subject, message } = req.body;
-
-    if (!owner || !subject || !message) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    const newTicket = new SupportTicket({
-      owner,
-      subject,
-      message,
-      status: "open",
-    });
-
-    const saved = await newTicket.save();
-
-    
-
-    res.status(201).json(saved);
-  } catch (err) {
-    console.error("Error creating ticket:", err); // Important!
-    res.status(500).json({ error: "Server error creating ticket" });
-  }
-});
-*/
 
 
 export default router;
