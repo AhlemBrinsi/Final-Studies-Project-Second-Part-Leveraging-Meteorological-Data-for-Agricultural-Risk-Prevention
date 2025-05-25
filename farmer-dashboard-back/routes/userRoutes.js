@@ -86,6 +86,20 @@ router.post('/register', async (req, res) => {
       subject: 'Verify your email',
       html: `<p>Click <a href="${verificationUrl}">here</a> to verify your email.</p>`
     });
+    try {
+              await createLog({
+                userId: newUser._id, 
+                username: newUser.username,
+                eventType: 'REGISTER',
+                eventCategory: 'Authentication',
+                description: "New user registered, verification email sent",
+                ipAddress: req.ip,
+                severity: 'INFO',
+                relatedEntity: `User:${newUser._id}`,
+              });
+            } catch (logErr) {
+              console.error('Error in creating log :', logErr);
+    }
 
     res.status(201).json({ message: 'User registered. Verification email sent.' });
   } catch (err) {
@@ -102,10 +116,36 @@ router.get('/verify-email', async (req, res) => {
     const decoded = jwt.verify(token, JWT_SECRET);
 
     const user = await User.findOne({ email: decoded.email });
-    if (!user) return res.status(404).send('User not found');
+    //if (!user) return res.status(404).send('User not found');
+    if (!user) {
+      // ❗ Log if user is not found
+      await createLog({
+        username: decoded.email,
+        eventType: 'EMAIL_VERIFICATION_FAILED',
+        eventCategory: 'Authentication',
+        description: "Email verification failed: user not found",
+        ipAddress: req.ip,
+        severity: 'WARN',
+      });
+      return res.status(404).send('User not found');
+    }
 
     user.verified = true;
     await user.save();
+    try {
+              await createLog({
+                userId: user._id, 
+                username: user.username,
+                eventType: 'EMAIL_VERIFICATION',
+                eventCategory: 'Authentication',
+                description: "User verified email successfully",
+                ipAddress: req.ip,
+                severity: 'INFO',
+                relatedEntity: `User:${user._id}`,
+              });
+            } catch (logErr) {
+              console.error('Error in creating log :', logErr);
+    }
 
     res.send('Email verified successfully! You can now login.');
   } catch (err) {
@@ -126,18 +166,73 @@ router.post('/login', async (req, res) => {
       ]
     });
 
-    if (!user) return res.status(400).json({ message: 'User not found' });
+    //if (!user) return res.status(400).json({ message: 'User not found' });
+     if (!user) {
+      // ❗ Log failed login: user not found
+      await createLog({
+        username: emailOrUsername,
+        eventType: 'FAILED_LOGIN',
+        eventCategory: 'Authentication',
+        description: 'Failed login: Mistaken username',
+        ipAddress: req.ip,
+        severity: 'WARN',
+      });
+      return res.status(400).json({ message: 'User not found' });
+    }
 
-    if (!user.verified) return res.status(403).json({ message: 'Email not verified' });
+    //if (!user.verified) return res.status(403).json({ message: 'Email not verified' });
+    if (!user.verified) {
+      // ❗ Log failed login: email not verified
+      await createLog({
+        userId: user._id,
+        username: user.username,
+        eventType: 'FAILED_LOGIN',
+        eventCategory: 'Authentication',
+        description: 'Failed login: email not verified',
+        ipAddress: req.ip,
+        severity: 'WARN',
+      });
+      return res.status(403).json({ message: 'Email not verified' });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+    //if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+
+    if (!isMatch) {
+      // ❗ Log failed login: invalid password
+      await createLog({
+        userId: user._id,
+        username: user.username,
+        eventType: 'FAILED_LOGIN',
+        eventCategory: 'Authentication',
+        description: 'Failed login: invalid password',
+        ipAddress: req.ip,
+        severity: 'WARN',
+      });
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
 
     if (!process.env.JWT_SECRET) {
       return res.status(500).json({ message: 'Server configuration error' });
     }
 
     const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    try {
+      await createLog({
+        userId: req.userId,
+        username: user.username,
+        eventType: 'LOGIN',        // or 'FAILED_LOGIN' for failure
+        eventCategory: 'Authentication',
+        description: 'User logged in successfully',
+        ipAddress: req.ip,
+        severity: 'INFO',
+        relatedEntity: `User:${user._id}`,
+      });
+
+    } catch (logErr) {
+      console.error('Error in creating log:', logErr);
+    }
 
     return res.status(200).json({
       message: 'Login successful',
@@ -179,6 +274,21 @@ router.post('/forgot-password', async (req, res) => {
       html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link expires in 1 hour.</p>`
     });
 
+    try {
+              await createLog({
+                userId: user._id, 
+                username: user.username,
+                eventType: 'PASSWORD_RESET_REQUEST',
+                eventCategory: 'Password',
+                description: "User requested password reset link",
+                ipAddress: req.ip,
+                severity: 'INFO',
+                relatedEntity: `User:${user._id}`,
+              });
+            } catch (logErr) {
+              console.error('Error in creating log :', logErr);
+    }
+
     res.json({ message: 'Reset password link sent to email' });
   } catch (err) {
     console.error(err);
@@ -206,6 +316,21 @@ router.post('/reset-password/:token', async (req, res) => {
     user.resetTokenExpires = undefined;
 
     await user.save();
+
+    try {
+              await createLog({
+                userId: user._id, 
+                username: user.username,
+                eventType: 'PASSWORD_RESET',
+                eventCategory: 'Password',
+                description: "User successfully reset their password",
+                ipAddress: req.ip,
+                severity: 'INFO',
+                relatedEntity: `User:${user._id}`,
+              });
+            } catch (logErr) {
+              console.error('Error in creating log :', logErr);
+    }
 
     res.json({ message: 'Password has been reset successfully' });
   } catch (err) {
@@ -297,6 +422,22 @@ router.patch('/:_id/verify', async (req, res) => {
     const updated = await User.findByIdAndUpdate(req.params._id, {
       verified: req.body.verified
     }, { new: true });
+    try {
+              const user = await User.findById(req.userId);
+              if (!user) throw new Error('User not found');
+              await createLog({
+                userId: user._id, 
+                username: user.username,
+                eventType: 'MANUAL_VERIFICATION',
+                eventCategory: 'Authentication',
+                description: `User verification status changed to ${req.body.verified}`,
+                ipAddress: req.ip,
+                severity: 'INFO',
+                relatedEntity: `User:${user._id}`,
+              });
+            } catch (logErr) {
+              console.error('Error in creating log :', logErr);
+    }
     res.json(updated);
   } catch (err) {
     res.status(500).json({ message: 'Error updating verification' });
@@ -307,6 +448,23 @@ router.patch('/:_id/verify', async (req, res) => {
 router.delete('/:_id', async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params._id);
+    try {
+      const user = await User.findById(req.userId);
+      if (!user) throw new Error('User not found');
+      await createLog({
+        userId: req.userId,
+        username: user.username,
+        eventType: 'USER_DELETE',        // or 'FAILED_LOGIN' for failure
+        eventCategory: 'Authentication',
+        description: 'User deleted successfully',
+        ipAddress: req.ip,
+        severity: 'INFO',
+        relatedEntity: `User:${user._id}`,
+      });
+
+    } catch (logErr) {
+      console.error('Error in creating log:', logErr);
+    }
     res.json({ message: 'User deleted' });
   } catch (err) {
     res.status(500).json({ message: 'Error deleting user' });
