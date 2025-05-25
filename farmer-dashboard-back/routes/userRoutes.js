@@ -10,6 +10,7 @@ import fs from "fs";
 import multer from "multer";
 import mongoose from 'mongoose';
 import { verifyToken } from '../middleware/auth.js';
+import { createLog } from '../controllers/logger.js';
 dotenv.config(); // Load .env file
 
 const router = express.Router();
@@ -136,7 +137,7 @@ router.post('/login', async (req, res) => {
       return res.status(500).json({ message: 'Server configuration error' });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     return res.status(200).json({
       message: 'Login successful',
@@ -213,6 +214,7 @@ router.post('/reset-password/:token', async (req, res) => {
 });
 
 
+// Fetching profile using the id 
 
 router.get("/:_id", async (req, res) => {
   try {
@@ -237,8 +239,7 @@ router.get("/:_id", async (req, res) => {
 });
 
 
-
-// Update user data by ID
+// Update user data by ID ( profile )
 router.put('/:_id', upload.single('profilePicture'), async (req, res) => {
   try {
     const userId = req.params._id;
@@ -258,6 +259,17 @@ router.put('/:_id', upload.single('profilePicture'), async (req, res) => {
     // Find user and update
     const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
     if (!user) return res.status(404).json({ message: 'User not found' });
+    // Create a log entry for this update
+    await createLog({
+      userId: user._id,
+      username: user.username,
+      eventType: 'UPDATE',
+      eventCategory: 'Profile',
+      description: 'User updated their profile',
+      ipAddress: req.ip,
+      severity: 'INFO',
+      relatedEntity: 'UserProfile',
+    });
 
     res.json({
       message: 'Profile updated successfully',

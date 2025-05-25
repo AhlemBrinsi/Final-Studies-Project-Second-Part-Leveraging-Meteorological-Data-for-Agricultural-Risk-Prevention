@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
-import { createLog } from './controllers/logger.js';
+import { createLog } from './logger.js';
+import Log from '../models/Log.js';
 
 
 async function test() {
