@@ -2,9 +2,9 @@ import express from 'express';
 import article from '../models/article.js';
 import Feedback from '../models/Feedback.js';
 import { verifyToken } from '../middleware/auth.js';
-
-
 const router = express.Router();
+
+// Create an article 
 
 router.post('/', verifyToken, async (req, res) => {
   try {
@@ -16,6 +16,7 @@ router.post('/', verifyToken, async (req, res) => {
   }
 });
 
+// Get the article with his feedbacks to be displayed on the dashboard
 
 router.get('/', async (req, res) => {
   try {
@@ -39,7 +40,8 @@ router.get('/', async (req, res) => {
 });
 
 
-// Post feedback on an article (requires auth)
+// Add a feedback on an article
+
 router.post('/:id/feedback', verifyToken, async (req, res) => {
   try {
     const { comment, rating } = req.body;
@@ -56,7 +58,8 @@ router.post('/:id/feedback', verifyToken, async (req, res) => {
   }
 });
 
-// Delete an article (requires auth)
+// Delete the article with his associated feedback by the creator of the article
+
 router.delete('/:id', verifyToken, async (req, res) => {
   try {
     const foundArticle = await article.findById(req.params.id);
@@ -66,15 +69,20 @@ router.delete('/:id', verifyToken, async (req, res) => {
       return res.status(403).json({ message: "Not authorized to delete this article" });
     }
 
+    // Delete all feedbacks associated with this article
+    await Feedback.deleteMany({ article: foundArticle._id });
+
+    // Then delete the article
     await foundArticle.deleteOne();
-    res.json({ message: "Article deleted successfully" });
+
+    res.json({ message: "Article and its feedbacks deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
+// Edit an article by his own creater only
 
-// Update an article (requires auth)
 router.put('/:id', verifyToken, async (req, res) => {
   try {
     const foundArticle = await article.findById(req.params.id);
@@ -92,8 +100,9 @@ router.put('/:id', verifyToken, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+ 
+// Delete the feedback by his own creater only 
 
-// DELETE /api/articles/:articleId/feedbacks/:feedbackId
 router.delete('/:articleId/feedbacks/:feedbackId', verifyToken, async (req, res) => {
   const { articleId, feedbackId } = req.params;
   try {
@@ -114,6 +123,8 @@ router.delete('/:articleId/feedbacks/:feedbackId', verifyToken, async (req, res)
     res.status(500).json({ message: 'Server error', error });
   }
 });
+
+// Edit the feedback of an article by his own creater only 
 
 router.put('/:articleId/feedbacks/:feedbackId', verifyToken, async (req, res) => {
   const { comment, rating } = req.body;
@@ -141,6 +152,5 @@ router.put('/:articleId/feedbacks/:feedbackId', verifyToken, async (req, res) =>
     res.status(500).json({ message: 'Server error', error });
   }
 });
-
 
 export default router;
