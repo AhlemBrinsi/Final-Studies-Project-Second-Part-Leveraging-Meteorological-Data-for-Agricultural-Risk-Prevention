@@ -3,11 +3,14 @@ import axios from 'axios';
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
+  const token = localStorage.getItem('token');
+  const userId = localStorage.getItem('userId');
+
 
   useEffect(() => {
     axios.get('/api/users', {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
+        Authorization: `Bearer ${'token'}`
       }
     }).then(res => {
       // Make sure res.data is an array
@@ -41,7 +44,7 @@ export default function UserManagement() {
     try {
       await axios.delete(`/api/users/${id}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          Authorization: `Bearer ${'token'}`
         }
       });
       setUsers(users.filter(u => u._id !== id));

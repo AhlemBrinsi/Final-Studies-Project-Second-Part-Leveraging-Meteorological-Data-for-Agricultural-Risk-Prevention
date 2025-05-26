@@ -51,7 +51,7 @@ router.patch("/:id",verifyToken, async (req, res) => {
           await createLog({
             userId: req.userId, 
             username: req.user.username,
-            eventType: 'SUPPORT_EDIT',
+            eventType: 'SUPPORT_RESPONSE',
             eventCategory: 'Support',
             description: "Support ticket updated",
             ipAddress: req.ip,

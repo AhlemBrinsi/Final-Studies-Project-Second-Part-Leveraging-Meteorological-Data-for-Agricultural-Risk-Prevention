@@ -417,7 +417,7 @@ router.get('/', async (req, res) => {
 });
 
 // Update verification status
-router.patch('/:_id/verify', async (req, res) => {
+router.patch('/:_id/verify', verifyToken ,async (req, res) => {
   try {
     const updated = await User.findByIdAndUpdate(req.params._id, {
       verified: req.body.verified
