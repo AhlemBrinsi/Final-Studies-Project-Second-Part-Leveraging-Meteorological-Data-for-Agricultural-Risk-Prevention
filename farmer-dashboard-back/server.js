@@ -5,6 +5,8 @@ import userRoutes from './routes/userRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js'; 
 import supportRoutes from "./routes/supportRoutes.js";
 import LogsRoutes from "./routes/LogsRoutes.js"
+import AnalyticsRoutes from './routes/AnalyticsRoutes.js';
+
 import path from 'path';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -23,6 +25,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/users', userRoutes);
 app.use("/api/support", supportRoutes);
 app.use("/api/logs", LogsRoutes);
+app.use('/api/analytics', AnalyticsRoutes);
 
 
 //app.use("/api/profile", profileRoutes);

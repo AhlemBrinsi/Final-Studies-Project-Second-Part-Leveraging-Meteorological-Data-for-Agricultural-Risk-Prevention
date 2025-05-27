@@ -12,7 +12,6 @@ const userSchema = new mongoose.Schema({
   bio: { type: String, default: "" },
   profilePicture: { type: String, default: "" }, // store URL or filename/path
   age: {type: Number}
-
-});
+}, { timestamps: true });
 
 export default mongoose.model('user', userSchema); 

@@ -10,7 +10,7 @@ const logSchema = new mongoose.Schema({
   severity: String,
   relatedEntity: String,
   timestamp: { type: Date, default: Date.now }
-});
+}, { timestamps: true });
 
 const Log = mongoose.model('Log', logSchema);
 export default Log;

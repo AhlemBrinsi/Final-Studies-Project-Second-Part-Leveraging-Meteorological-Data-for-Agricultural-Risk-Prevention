@@ -5,6 +5,8 @@ import { verifyToken } from '../middleware/auth.js';
 import { createLog } from '../controllers/logger.js';
 import User from '../models/user.js';
 const router = express.Router();
+import Sentiment from 'sentiment';
+const sentiment = new Sentiment();
 
 // Create an article 
 router.post('/', verifyToken, async (req, res) => {
@@ -42,11 +44,24 @@ router.post('/', verifyToken, async (req, res) => {
 router.post('/:id/feedback', verifyToken, async (req, res) => {
   try {
     const { comment, rating } = req.body;
+    const sentimentResult = sentiment.analyze(comment);
+    // Compute label from score
+    let label = 'neutral';
+    if (sentimentResult.score > 0) {
+      label = 'positive';
+    } else if (sentimentResult.score < 0) {
+      label = 'negative';
+    }
     const feedback = new Feedback({
       article: req.params.id,
       owner: req.userId, // ici owner au lieu de user
       comment,
-      rating
+      rating,
+      sentiment: {
+        score: sentimentResult.score,
+        comparative: sentimentResult.comparative,
+        label: label,
+      }
     });
     await feedback.save();
     try {
@@ -220,10 +235,22 @@ router.put('/:articleId/feedbacks/:feedbackId', verifyToken, async (req, res) =>
     if (feedback.owner.toString() !== req.userId) {
       return res.status(403).json({ message: 'Not authorized to update this feedback' });
     }
-
+    const sentimentResult = sentiment.analyze(comment);
+    // Compute label from score
+    let label = 'neutral';
+    if (sentimentResult.score > 0) {
+      label = 'positive';
+    } else if (sentimentResult.score < 0) {
+      label = 'negative';
+    }
     // Update fields
     feedback.comment = comment;
     feedback.rating = rating;
+    feedback.sentiment = {
+      score: sentimentResult.score,
+      comparative: sentimentResult.comparative,
+      label: label,
+    };
     await feedback.save();
 
     try {
