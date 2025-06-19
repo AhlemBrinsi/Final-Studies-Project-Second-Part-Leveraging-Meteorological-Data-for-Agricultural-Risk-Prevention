@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ClientProfile from './ClientProfile.jsx'; 
-import DashboardMain from './DashboardMain.jsx';
+//import DashboardMain from './DashboardMain.jsx';
 import { useLocation } from 'react-router-dom';
 import ViewArticles from './ViewArticles.jsx';
 import ClientSupport from './ClientSupport.jsx';
-import WeatherDashboard from './WeatherDashboard.jsx';
+import ClientWeatherDashboard from './ClientWeatherDashboard.jsx';
 export default function ClientDashboard() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-  const [activeView, setActiveView] = useState("dashboard");
+  const [activeView, setActiveView] = useState("weather");
 
 
   // ✅ Handle missing user data (page refresh case)
@@ -224,14 +224,6 @@ export default function ClientDashboard() {
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
           <main className="flex-1 p-6 overflow-auto">
-            {activeView === "dashboard" && (
-                <>
-                  <h1 className="text-2xl font-semibold mb-6">Performance</h1>
-                    <div className="bg-gray-100 rounded-lg p-4 shadow mb-6">
-                      <DashboardMain />
-                    </div>
-                  </>
-            )}
             {activeView === "profile" && (
                 <div className="bg-gray-100 rounded-lg p-4 shadow mb-6">
                       <ClientProfile user={user} />
@@ -249,7 +241,7 @@ export default function ClientDashboard() {
             )}
             {activeView === "weather" && (
                 <div className="bg-gray-100 rounded-lg p-4 shadow mb-6">
-                      <WeatherDashboard />
+                      <ClientWeatherDashboard />
                 </div>
             )}
           </main>

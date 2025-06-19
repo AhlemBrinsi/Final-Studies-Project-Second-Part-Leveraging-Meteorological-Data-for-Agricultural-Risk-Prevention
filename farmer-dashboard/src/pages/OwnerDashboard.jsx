@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import OwnerProfile from './OwnerProfile.jsx'; 
-import DashboardMain from './DashboardMain.jsx';
+//import DashboardMain from './DashboardMain.jsx';
 import { useLocation } from 'react-router-dom';
 import UserManagement from './UserManagement.jsx'; 
 import ArticlesDashboard from './ArticlesDashboard.jsx';
@@ -15,7 +15,7 @@ export default function OwnerDashboard() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-  const [activeView, setActiveView] = useState("dashboard");
+  const [activeView, setActiveView] = useState("weather");
 
 
 
@@ -259,15 +259,13 @@ export default function OwnerDashboard() {
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
           <main className="flex-1 p-6 overflow-auto">
-            {activeView === "dashboard" && (
+            {activeView === "weather" && (
               <>
-                <h1 className="text-2xl font-semibold mb-6">Performance</h1>
                 <div className="bg-gray-100 rounded-lg p-4 shadow mb-6">
-                  <DashboardMain />
+                  <WeatherDashboard />
                 </div>
               </>
             )}
-
             {activeView === "profile" && (
               <div className="bg-gray-100 rounded-lg p-4 shadow mb-6">
                 <OwnerProfile user={user} />
@@ -297,11 +295,6 @@ export default function OwnerDashboard() {
               <div className="bg-gray-100 rounded-lg p-4 shadow mb-6">
                 <Analytics />
               </div>
-            )}
-            {activeView === "weather" && (
-                <div className="bg-gray-100 rounded-lg p-4 shadow mb-6">
-                      <WeatherDashboard />
-                </div>
             )}
 
           </main>

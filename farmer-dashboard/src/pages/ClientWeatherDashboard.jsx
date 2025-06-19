@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
-function WeatherDashboard() {
-  const [weather, setWeather] = useState(null); // ✅ FIXED: now inside the component
+function ClientWeatherDashboard() {
+  const [weather, setWeather] = useState(null);
 
   useEffect(() => {
     const mockWeather = {
@@ -123,31 +123,9 @@ function WeatherDashboard() {
             ))}
           </div>
         </section>
-        {/* Model Summary Section */}
-        <section>
-        <h2 className="text-3xl font-semibold mb-4" style={{ color: '#3a7d44' }}>
-            Prediction Model Summary
-        </h2>
-        <div
-            className="p-6 rounded-xl text-left space-y-2 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl"
-            style={{
-            backgroundColor: '#f0f4f1',
-            boxShadow: '0 0 12px #a7c95788',
-            }}
-        >
-            <p><span className="font-semibold text-gray-700">Model Name:</span> TransformerWeatherNet v1.3</p>
-            <p><span className="font-semibold text-gray-700">Architecture:</span> Multi-Head Self-Attention with Positional Encoding</p>
-            <p><span className="font-semibold text-gray-700">Input Window:</span> Last 10 days</p>
-            <p><span className="font-semibold text-gray-700">Forecast Horizon:</span> 4 days ahead</p>
-            <p><span className="font-semibold text-gray-700">Evaluation:</span> Accuracy: <span className="text-green-600 font-bold">87%</span>, F1-score: <span className="text-green-600 font-bold">0.84</span></p>
-            <p><span className="font-semibold text-gray-700">Last Trained:</span> 2025-06-17</p>
-        </div>
-        </section>
-
-
       </div>
     </div>
   );
 }
 
-export default WeatherDashboard;
+export default ClientWeatherDashboard;
