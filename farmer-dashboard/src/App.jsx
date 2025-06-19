@@ -17,10 +17,12 @@ import AdminSupport from './pages/AdminSupport.jsx';
 import ClientSupport from './pages/ClientSupport.jsx';
 import Logs from './pages/Logs.jsx';
 import Analytics from './pages/Analytics.jsx';
+import WeatherDashboard from './pages/WeatherDashboard.jsx';
 export default function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/weather" element={<WeatherDashboard />} />
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/logs" element={<Logs />} />
         <Route path="/client-support" element={<ClientSupport />} />

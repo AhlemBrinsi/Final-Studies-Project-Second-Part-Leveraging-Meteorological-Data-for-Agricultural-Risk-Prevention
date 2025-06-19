@@ -5,7 +5,7 @@ import DashboardMain from './DashboardMain.jsx';
 import { useLocation } from 'react-router-dom';
 import ViewArticles from './ViewArticles.jsx';
 import ClientSupport from './ClientSupport.jsx';
-
+import WeatherDashboard from './WeatherDashboard.jsx';
 export default function ClientDashboard() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -123,7 +123,15 @@ export default function ClientDashboard() {
         <aside className="w-50 min-h-[calc(80vh-10px)] mb-10 bg-gradient-to-tr from-green-400 to-green-500 text-white flex flex-col p-6 rounded-lg shadow-lg transition-all duration-300 hover:w-60 ml-4 items-start">
           {/* Top nav items */}
           <nav className="flex flex-col space-y-10 text-sm opacity-80 w-full">
-            <a href="#" className="hover:opacity-100 block px-2 flex items-center space-x-3">
+            <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveView("weather");
+                  setDropdownOpen(false);
+                }}
+                className="hover:opacity-100 block px-2 flex items-center space-x-2"
+            >
               {/* Weather icon */}
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15a4.5 4.5 0 0 0 4.5 4.5H18a3.75 3.75 0 0 0 1.332-7.257 3 3 0 0 0-3.758-3.848 5.25 5.25 0 0 0-10.233 2.33A4.502 4.502 0 0 0 2.25 15Z" />
@@ -237,6 +245,11 @@ export default function ClientDashboard() {
             {activeView === "support" && (
                 <div className="bg-gray-100 rounded-lg p-4 shadow mb-6">
                       <ClientSupport />
+                </div>
+            )}
+            {activeView === "weather" && (
+                <div className="bg-gray-100 rounded-lg p-4 shadow mb-6">
+                      <WeatherDashboard />
                 </div>
             )}
           </main>
