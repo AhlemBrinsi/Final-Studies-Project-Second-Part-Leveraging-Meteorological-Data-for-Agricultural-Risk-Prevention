@@ -1,6 +1,6 @@
 🌱 AGRICULTURAL WEATHER RECOMMENDATION REPORT 🌱
 ==================================================
-Generated on: 2025-07-26 17:28:19
+Generated on: 2025-07-26 22:25:06
 Based on data up to: 2025-05-15
 Forecast period: 3 days
 
@@ -8,7 +8,7 @@ Forecast period: 3 days
 ------------------------------
 Weather: Cloudy ☁️ 🌤
 Temperature: 17.9°C - 26.1°C
-Humidity: 47.2% - 83.0%
+Humidity: 47.2% - 87.8%
 
 💧 IRRIGATION ADVICE:
   Priority: MEDIUM
@@ -37,7 +37,7 @@ Humidity: 47.2% - 83.0%
 ------------------------------
 Weather: Light Drizzle 🌦 🌤
 Temperature: 17.8°C - 28.8°C
-Humidity: 47.4% - 85.0%
+Humidity: 47.4% - 84.4%
 
 💧 IRRIGATION ADVICE:
   Priority: MEDIUM
@@ -66,7 +66,7 @@ Humidity: 47.4% - 85.0%
 ------------------------------
 Weather: Cloudy ☁️ 🌤
 Temperature: 17.9°C - 28.7°C
-Humidity: 46.9% - 87.6%
+Humidity: 46.9% - 85.7%
 
 💧 IRRIGATION ADVICE:
   Priority: MEDIUM
@@ -94,7 +94,7 @@ Humidity: 46.9% - 87.6%
 📊 WEEKLY SUMMARY & RECOMMENDATIONS
 ==================================================
 Average temperatures: 17.8°C - 27.9°C
-Average humidity: 66.2%
+Average humidity: 66.6%
 Rainy days expected: 1/3
 
 🎯 KEY WEEKLY RECOMMENDATIONS:

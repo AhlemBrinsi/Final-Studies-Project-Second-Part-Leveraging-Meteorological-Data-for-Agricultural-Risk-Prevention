@@ -2539,36 +2539,30 @@ class HumidityMaxLSTM:
         
         return results, history, y_true_original, y_pred_original
     
-    def predict_future(self, recent_data, days_ahead=None):
-        """Predict humidity max for future days"""
-        if days_ahead is None:
-            days_ahead = self.forecast_horizon
-        
+    def predict_future(self, recent_data):
         if isinstance(recent_data, pd.DataFrame):
-            # Ensure recent_data has the same preprocessing
             recent_scaled = self.scaler_features.transform(recent_data[self.feature_cols])
+        elif isinstance(recent_data, np.ndarray):
+            if recent_data.shape[1] == len(self.feature_cols):
+                recent_scaled = self.scaler_features.transform(recent_data)
+            else:
+                recent_scaled = recent_data
         else:
-            recent_scaled = recent_data
-        
-        # Use the last sequence_length days as input
+            raise ValueError("recent_data must be a DataFrame or NumPy array")
+
         input_seq = recent_scaled[-self.sequence_length:].reshape(1, self.sequence_length, -1)
-        
-        # Make prediction
         prediction_scaled = self.model.predict(input_seq, verbose=0)
-        
-        # Inverse transform to original scale
+
+        # Inverse transform
         prediction_original = np.zeros_like(prediction_scaled)
         for day in range(self.forecast_horizon):
             prediction_original[0, day, :] = self.scaler_targets.inverse_transform(
                 prediction_scaled[0, day, :].reshape(1, -1)
             )
-        
-        # Create results dictionary
-        results = {}
-        for i, target_name in enumerate(self.available_targets):
-            results[target_name] = prediction_original[0, :days_ahead, i]
-        
-        return results
+
+        predicted_values = prediction_original[0, :, 0]  # shape: (forecast_horizon,)
+
+        return predicted_values
     
     def plot_training_history(self, history):
         """Plot training history"""

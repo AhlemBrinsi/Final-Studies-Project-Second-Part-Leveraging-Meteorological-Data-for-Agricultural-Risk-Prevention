@@ -151,7 +151,7 @@
         "rain_volatility_7d",
         "temp_seasonal_anomaly"
     ],
-    "timestamp": "20250726_215117",
+    "timestamp": "20250726_221759",
     "model_type": "HumidityMaxLSTM",
     "framework": "TensorFlow/Keras"
 }
