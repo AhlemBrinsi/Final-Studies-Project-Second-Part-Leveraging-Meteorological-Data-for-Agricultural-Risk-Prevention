@@ -30,7 +30,7 @@ from tensorflow.keras.models import load_model
 
 
 from model_utils import load_lstm_model, load_classification_model, focal_loss_fn
-from models import OptimizedTemperatureMinLSTM, OptimizedTemperatureMaxLSTM, OptimizedHumidityMinLSTM, OptimizedHumidityMaxLSTM, ImprovedSlidingWindowModel
+from models import OptimizedTemperatureMinLSTM, OptimizedTemperatureMaxLSTM, OptimizedHumidityMinLSTM, HumidityMaxLSTM, ImprovedSlidingWindowModel
 
 class AgriculturalRecommendationSystem:
         def __init__(self):
@@ -102,7 +102,7 @@ class AgriculturalRecommendationSystem:
                 'temp_min': OptimizedTemperatureMinLSTM,
                 'temp_max': OptimizedTemperatureMaxLSTM,
                 'humidity_min': OptimizedHumidityMinLSTM,
-                'humidity_max': OptimizedHumidityMaxLSTM,
+                'humidity_max': HumidityMaxLSTM,
                 'weather_condition': ImprovedSlidingWindowModel
             }
 

@@ -64,7 +64,7 @@ if __name__ == "__main__":
     model_paths = {
         'weather_condition': 'models/BestWeatherModel_20250707_043444',
         'humidity_min': 'models/BestMinimumHumidityLSTM_Model1_20250704_150613',
-        'humidity_max': 'models/BestMaximumHumidityLSTM_Model1_20250704_134945',
+        'humidity_max': 'models/MaximumHumidityLSTM_Model1_20250726_215117',
         'temp_min': 'models/BestMinimumTemperatureLSTM_Model1_20250704_122946',
         'temp_max': 'models/BestMaximumTemperatureLSTM_Model1_20250704_110121',
     }

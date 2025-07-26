@@ -2262,24 +2262,26 @@ class OptimizedTemperatureMaxLSTM:
         plt.show()
 
 
-class OptimizedHumidityMaxLSTM:
+class HumidityMaxLSTM:
     def __init__(self, df, sequence_length=10, forecast_horizon=3):
+        """
+        Dedicated LSTM model for humidity max prediction
+        """
         self.df = df.copy()
         self.sequence_length = sequence_length
         self.forecast_horizon = forecast_horizon
         self.scaler_features = None
         self.scaler_targets = None
         self.model = None
-        self.best_params = None
-        self.study = None
         
-        # Temperature target columns
-        self.target_cols = [
+        # Temperature and humidity target columns
+        self.target_cols = [ 
             'relative_humidity_2m_max (%)'
         ]
         
     def preprocess_data(self):
-        print("🧹 Preprocessing data for max temperature prediction...")
+        """Preprocess data specifically for max humidity prediction"""
+        print("🧹 Preprocessing data for max humidity prediction...")
         df = self.df.copy()
         
         # Check which target columns are available
@@ -2300,7 +2302,7 @@ class OptimizedHumidityMaxLSTM:
         df = df.dropna(subset=available_targets)
         
         # Define feature columns (exclude date, weather_condition, and target columns)
-        exclude_cols = ['date', 'weather_condition', 'temperature_2m_max (°C)', 'relative_humidity_2m_min (%)', 'temperature_2m_min (°C)'] + available_targets
+        exclude_cols = ['date', 'weather_condition','relative_humidity_2m_min (%)','temperature_2m_min (°C)', 'temperature_2m_max (°C)'] + available_targets
         feature_cols = [col for col in df.columns if col not in exclude_cols]
         
         # Handle missing values for features
@@ -2329,7 +2331,8 @@ class OptimizedHumidityMaxLSTM:
         return df
     
     def create_sequences(self):
-        print(f"🪟 Creating sequences for Maximum temperature prediction...")
+        """Create sequences for Maximum humidity prediction"""
+        print(f"🪟 Creating sequences for Maximum humidity prediction...")
         
         X, y = [], []
         data = self.df_processed
@@ -2358,224 +2361,47 @@ class OptimizedHumidityMaxLSTM:
         
         return X, y
     
-    def build_model_with_params(self, trial, input_shape, output_shape):
-        
-        # Hyperparameters to optimize
-        lstm1_units = trial.suggest_int('lstm1_units', 32, 256, step=32)
-        lstm2_units = trial.suggest_int('lstm2_units', 16, 128, step=16)
-        lstm3_units = trial.suggest_int('lstm3_units', 8, 64, step=8)
-        
-        dense1_units = trial.suggest_int('dense1_units', 32, 128, step=16)
-        dense2_units = trial.suggest_int('dense2_units', 16, 64, step=8)
-        
-        dropout_rate = trial.suggest_float('dropout_rate', 0.1, 0.5, step=0.1)
-        recurrent_dropout = trial.suggest_float('recurrent_dropout', 0.1, 0.4, step=0.1)
-        l2_reg = trial.suggest_float('l2_reg', 1e-5, 1e-2, log=True)
-        
-        learning_rate = trial.suggest_float('learning_rate', 1e-4, 1e-2, log=True)
-        batch_norm = trial.suggest_categorical('batch_norm', [True, False])
-        
-        model = Sequential()
-        
-        # First LSTM layer
-        model.add(LSTM(lstm1_units, return_sequences=True, input_shape=input_shape,
-                      kernel_regularizer=l2(l2_reg), 
-                      dropout=dropout_rate, recurrent_dropout=recurrent_dropout))
-        if batch_norm:
-            model.add(BatchNormalization())
-        
-        # Second LSTM layer
-        model.add(LSTM(lstm2_units, return_sequences=True,
-                      kernel_regularizer=l2(l2_reg),
-                      dropout=dropout_rate, recurrent_dropout=recurrent_dropout))
-        if batch_norm:
-            model.add(BatchNormalization())
-        
-        # Third LSTM layer
-        model.add(LSTM(lstm3_units, return_sequences=False,
-                      kernel_regularizer=l2(l2_reg),
-                      dropout=dropout_rate, recurrent_dropout=recurrent_dropout))
-        if batch_norm:
-            model.add(BatchNormalization())
-        
-        model.add(Dropout(dropout_rate + 0.1))
-        
-        # Dense layers
-        model.add(Dense(dense1_units, activation='relu', kernel_regularizer=l2(l2_reg)))
-        if batch_norm:
-            model.add(BatchNormalization())
-        model.add(Dropout(dropout_rate + 0.1))
-        
-        model.add(Dense(dense2_units, activation='relu', kernel_regularizer=l2(l2_reg)))
-        model.add(Dropout(dropout_rate))
-        
-        # Output layer
-        model.add(Dense(output_shape[0] * output_shape[1], activation='linear'))
-        
-        # Reshape to (forecast_horizon, num_target_variables)
-        model.add(tf.keras.layers.Reshape(output_shape))
-        
-        # Compile model
-        model.compile(
-            optimizer=Adam(learning_rate=learning_rate, clipnorm=1.0),
-            loss='mse',
-            metrics=['mae']
-        )
+    def build_model(self, input_shape, output_shape):
+        """Build LSTM model for Maximum humidity prediction"""
+        model = Sequential([
+            # First LSTM layer
+            LSTM(128, return_sequences=True, input_shape=input_shape,
+                 kernel_regularizer=l2(0.001), dropout=0.2, recurrent_dropout=0.2),
+            BatchNormalization(),
+            
+            # Second LSTM layer
+            LSTM(64, return_sequences=True,
+                 kernel_regularizer=l2(0.001), dropout=0.2, recurrent_dropout=0.2),
+            BatchNormalization(),
+            
+            # Third LSTM layer
+            LSTM(32, return_sequences=False,
+                 kernel_regularizer=l2(0.001), dropout=0.2, recurrent_dropout=0.2),
+            BatchNormalization(),
+            Dropout(0.3),
+            
+            # Dense layers for multi-step prediction
+            Dense(64, activation='relu', kernel_regularizer=l2(0.001)),
+            BatchNormalization(),
+            Dropout(0.3),
+            
+            Dense(32, activation='relu', kernel_regularizer=l2(0.001)),
+            Dropout(0.2),
+            
+            # Output layer - predict all forecast steps and variables at once
+            Dense(output_shape[0] * output_shape[1], activation='linear'),
+            
+            # Reshape to (forecast_horizon, num_target_variables)
+            tf.keras.layers.Reshape(output_shape)
+        ])
         
         return model
     
-    def objective(self, trial):
-        
-        try:
-            # Create sequences
-            X, y = self.create_sequences()
-            
-            if len(X) == 0:
-                return float('inf')
-            
-            # Train-validation split
-            X_train, X_val, y_train, y_val = train_test_split(
-                X, y, test_size=0.2, random_state=42, shuffle=True
-            )
-            
-            # Build model with trial parameters
-            input_shape = (self.sequence_length, X.shape[2])
-            output_shape = (self.forecast_horizon, len(self.available_targets))
-            
-            model = self.build_model_with_params(trial, input_shape, output_shape)
-            
-            # Training parameters
-            batch_size = trial.suggest_categorical('batch_size', [16, 32, 64])
-            
-            # Callbacks
-            callbacks = [
-                EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True, verbose=0),
-                ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, min_lr=1e-7, verbose=0)
-            ]
-            
-            # Train model
-            history = model.fit(
-                X_train, y_train,
-                epochs=50,  # Reduced for faster optimization
-                batch_size=batch_size,
-                validation_data=(X_val, y_val),
-                callbacks=callbacks,
-                verbose=0
-            )
-            
-            # Get best validation loss
-            best_val_loss = min(history.history['val_loss'])
-            
-            # Clean up to free memory
-            del model
-            tf.keras.backend.clear_session()
-            
-            return best_val_loss
-            
-        except Exception as e:
-            print(f"Trial failed with error: {e}")
-            return float('inf')
-    
-    def optimize_hyperparameters(self, n_trials=20, timeout=None):
-        
+    def train_model(self, validation_split=0.2, epochs=150, batch_size=32):
+        """Train the Humidity max LSTM model"""
         print("\n" + "="*70)
-        print("🔧 HYPERPARAMETER OPTIMIZATION WITH OPTUNA")
+        print("TRAINING HUMIDITY MAX LSTM MODEL")
         print("="*70)
-        
-        # Create study
-        self.study = optuna.create_study(direction='minimize', 
-                                        study_name='temperature_lstm_optimization')
-        
-        print(f"Starting optimization with {n_trials} trials...")
-        if timeout:
-            print(f"Timeout set to {timeout} seconds")
-        
-        # Optimize
-        self.study.optimize(self.objective, n_trials=n_trials, timeout=timeout)
-        
-        # Get best parameters
-        self.best_params = self.study.best_params
-        
-        print("\n🏆 OPTIMIZATION COMPLETED!")
-        print("="*50)
-        print(f"Best validation loss: {self.study.best_value:.6f}")
-        print(f"Number of trials: {len(self.study.trials)}")
-        
-        print(f"\n🎯 BEST HYPERPARAMETERS:")
-        print("-" * 40)
-        for key, value in self.best_params.items():
-            print(f"{key:20s}: {value}")
-        
-        return self.best_params
-    
-    def build_best_model(self, input_shape, output_shape):
-        """Build model with best parameters found by Optuna"""
-        if self.best_params is None:
-            raise ValueError("No optimization performed yet. Run optimize_hyperparameters() first.")
-        
-        model = Sequential()
-        
-        # Use best parameters
-        lstm1_units = self.best_params['lstm1_units']
-        lstm2_units = self.best_params['lstm2_units']
-        lstm3_units = self.best_params['lstm3_units']
-        dense1_units = self.best_params['dense1_units']
-        dense2_units = self.best_params['dense2_units']
-        dropout_rate = self.best_params['dropout_rate']
-        recurrent_dropout = self.best_params['recurrent_dropout']
-        l2_reg = self.best_params['l2_reg']
-        learning_rate = self.best_params['learning_rate']
-        batch_norm = self.best_params['batch_norm']
-        
-        # Build architecture
-        model.add(LSTM(lstm1_units, return_sequences=True, input_shape=input_shape,
-                      kernel_regularizer=l2(l2_reg), 
-                      dropout=dropout_rate, recurrent_dropout=recurrent_dropout))
-        if batch_norm:
-            model.add(BatchNormalization())
-        
-        model.add(LSTM(lstm2_units, return_sequences=True,
-                      kernel_regularizer=l2(l2_reg),
-                      dropout=dropout_rate, recurrent_dropout=recurrent_dropout))
-        if batch_norm:
-            model.add(BatchNormalization())
-        
-        model.add(LSTM(lstm3_units, return_sequences=False,
-                      kernel_regularizer=l2(l2_reg),
-                      dropout=dropout_rate, recurrent_dropout=recurrent_dropout))
-        if batch_norm:
-            model.add(BatchNormalization())
-        
-        model.add(Dropout(dropout_rate + 0.1))
-        
-        model.add(Dense(dense1_units, activation='relu', kernel_regularizer=l2(l2_reg)))
-        if batch_norm:
-            model.add(BatchNormalization())
-        model.add(Dropout(dropout_rate + 0.1))
-        
-        model.add(Dense(dense2_units, activation='relu', kernel_regularizer=l2(l2_reg)))
-        model.add(Dropout(dropout_rate))
-        
-        model.add(Dense(output_shape[0] * output_shape[1], activation='linear'))
-        model.add(tf.keras.layers.Reshape(output_shape))
-        
-        # Compile with best parameters
-        model.compile(
-            optimizer=Adam(learning_rate=learning_rate, clipnorm=1.0),
-            loss='mse',
-            metrics=['mae']
-        )
-        
-        return model
-    
-    def train_optimized_model(self, validation_split=0.2, epochs=200):
-        
-        print("\n" + "="*70)
-        print("TRAINING OPTIMIZED TEMPERATURE MAX LSTM MODEL")
-        print("="*70)
-        
-        if self.best_params is None:
-            raise ValueError("No optimization performed yet. Run optimize_hyperparameters() first.")
         
         # Create sequences
         X, y = self.create_sequences()
@@ -2590,26 +2416,30 @@ class OptimizedHumidityMaxLSTM:
         
         print(f"Training samples: {len(X_train)}, Test samples: {len(X_test)}")
         
-        # Build optimized model
+        # Build model
         input_shape = (self.sequence_length, X.shape[2])
         output_shape = (self.forecast_horizon, len(self.available_targets))
         
-        self.model = self.build_best_model(input_shape, output_shape)
+        self.model = self.build_model(input_shape, output_shape)
         
-        print(f"\nOptimized model architecture:")
+        # Compile model
+        self.model.compile(
+            optimizer=Adam(learning_rate=0.001, clipnorm=1.0),
+            loss='mse',
+            metrics=['mae']
+        )
+        
+        print(f"\nModel architecture:")
         self.model.summary()
-        
-        # Use best batch size
-        batch_size = self.best_params.get('batch_size', 32)
         
         # Callbacks
         callbacks = [
-            EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True, verbose=1),
-            ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=10, min_lr=1e-7, verbose=1)
+            EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True, verbose=1),
+            ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=8, min_lr=1e-7, verbose=1)
         ]
         
         # Train model
-        print(f"\nTraining optimized model...")
+        print(f"\nTraining model...")
         history = self.model.fit(
             X_train, y_train,
             epochs=epochs,
@@ -2620,14 +2450,15 @@ class OptimizedHumidityMaxLSTM:
         )
         
         # Evaluate
-        print(f"\nEvaluating optimized model...")
+        print(f"\nEvaluating model...")
         y_pred = self.model.predict(X_test, verbose=0)
         
         return self.evaluate_model(y_test, y_pred, history)
     
     def evaluate_model(self, y_true, y_pred, history):
+        """Evaluate the humidity max model"""
         print("\n" + "="*70)
-        print("OPTIMIZED TEMPERATURE MAX LSTM RESULTS")
+        print("HUMIDITY MAX LSTM RESULTS")
         print("="*70)
         
         # Inverse transform predictions and true values to original scale
@@ -2699,52 +2530,54 @@ class OptimizedHumidityMaxLSTM:
         print(f"Overall Average R²: {np.mean(all_r2s):.3f}")
         print(f"Overall Average MAPE: {np.mean(all_mapes):.2f}%")
         
-        # Optimization summary
-        if self.best_params:
-            print(f"\n🔧 OPTIMIZATION SUMMARY:")
-            print("-" * 40)
-            print(f"Best validation loss: {self.study.best_value:.6f}")
-            print(f"Number of trials completed: {len(self.study.trials)}")
-            print(f"Best LSTM architecture: {self.best_params['lstm1_units']}-{self.best_params['lstm2_units']}-{self.best_params['lstm3_units']}")
-            print(f"Best Dense architecture: {self.best_params['dense1_units']}-{self.best_params['dense2_units']}")
-            print(f"Best learning rate: {self.best_params['learning_rate']:.6f}")
-            print(f"Best dropout rate: {self.best_params['dropout_rate']:.3f}")
+        # Best and worst performing variables
+        best_target = min(results.keys(), key=lambda x: results[x]['avg_mae'])
+        worst_target = max(results.keys(), key=lambda x: results[x]['avg_mae'])
+        
+        print(f"\n🏆 Best performing variable: {best_target} (MAE: {results[best_target]['avg_mae']:.3f})")
+        print(f"⚠️  Worst performing variable: {worst_target} (MAE: {results[worst_target]['avg_mae']:.3f})")
         
         return results, history, y_true_original, y_pred_original
     
-    
-    def predict_future(self, recent_data):
+    def predict_future(self, recent_data, days_ahead=None):
+        """Predict humidity max for future days"""
+        if days_ahead is None:
+            days_ahead = self.forecast_horizon
+        
         if isinstance(recent_data, pd.DataFrame):
+            # Ensure recent_data has the same preprocessing
             recent_scaled = self.scaler_features.transform(recent_data[self.feature_cols])
-        elif isinstance(recent_data, np.ndarray):
-            if recent_data.shape[1] == len(self.feature_cols):
-                recent_scaled = self.scaler_features.transform(recent_data)
-            else:
-                recent_scaled = recent_data
         else:
-            raise ValueError("recent_data must be a DataFrame or NumPy array")
-
+            recent_scaled = recent_data
+        
+        # Use the last sequence_length days as input
         input_seq = recent_scaled[-self.sequence_length:].reshape(1, self.sequence_length, -1)
+        
+        # Make prediction
         prediction_scaled = self.model.predict(input_seq, verbose=0)
-
-        # Inverse transform
+        
+        # Inverse transform to original scale
         prediction_original = np.zeros_like(prediction_scaled)
         for day in range(self.forecast_horizon):
             prediction_original[0, day, :] = self.scaler_targets.inverse_transform(
                 prediction_scaled[0, day, :].reshape(1, -1)
             )
-
-        predicted_values = prediction_original[0, :, 0]  
-
-        return predicted_values  
+        
+        # Create results dictionary
+        results = {}
+        for i, target_name in enumerate(self.available_targets):
+            results[target_name] = prediction_original[0, :days_ahead, i]
+        
+        return results
     
     def plot_training_history(self, history):
+        """Plot training history"""
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 5))
         
         # Loss
         ax1.plot(history.history['loss'], label='Training Loss')
         ax1.plot(history.history['val_loss'], label='Validation Loss')
-        ax1.set_title('Optimized Model Loss')
+        ax1.set_title('Model Loss')
         ax1.set_xlabel('Epoch')
         ax1.set_ylabel('Loss')
         ax1.legend()
@@ -2752,42 +2585,12 @@ class OptimizedHumidityMaxLSTM:
         # MAE
         ax2.plot(history.history['mae'], label='Training MAE')
         ax2.plot(history.history['val_mae'], label='Validation MAE')
-        ax2.set_title('Optimized Model MAE')
+        ax2.set_title('Model MAE')
         ax2.set_xlabel('Epoch')
         ax2.set_ylabel('MAE')
         ax2.legend()
         
         plt.tight_layout()
         plt.show()
-    
-    def plot_optimization_history(self):
+
         
-        if self.study is None:
-            print("No optimization study available to plot.")
-            return
-        
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 5))
-        
-        # Optimization history
-        values = [trial.value for trial in self.study.trials if trial.value is not None]
-        ax1.plot(values)
-        ax1.set_title('Optimization History')
-        ax1.set_xlabel('Trial')
-        ax1.set_ylabel('Validation Loss')
-        ax1.grid(True)
-        
-        # Parameter importance (if available)
-        try:
-            importance = optuna.importance.get_param_importances(self.study)
-            params = list(importance.keys())
-            importances = list(importance.values())
-            
-            ax2.barh(params, importances)
-            ax2.set_title('Parameter Importance')
-            ax2.set_xlabel('Importance')
-        except:
-            ax2.text(0.5, 0.5, 'Parameter importance\nnot available', 
-                    ha='center', va='center', transform=ax2.transAxes)
-        
-        plt.tight_layout()
-        plt.show()
