@@ -15,12 +15,13 @@ if __name__ == "__main__":
     # Get the last date from your data
     # Assuming your CSV has a 'date' column
     if 'date' in df.columns:
-        last_date = df['date'].iloc[-1]  # Get the last date
-        print(f"📅 Last date in data: {last_date}")
+        last_date_str = df['date'].iloc[-1]  # last date string
+        last_date = datetime.strptime(last_date_str, "%Y-%m-%d")  # convert to datetime
+        print(f"📅 Last date in data: {last_date.strftime('%Y-%m-%d')}")
     else:
-        # If no date column, you need to specify it manually
-        last_date = "2025-05-15"  # Your last date
-        print(f"📅 Manually set last date: {last_date}")
+        # If no date column, set manually as datetime object
+        last_date = datetime.strptime("2025-05-15", "%Y-%m-%d")
+        print(f"📅 Manually set last date: {last_date.strftime('%Y-%m-%d')}")
 
     # Initialize and transform with feature engineer
     engineer = WeatherFeatureEngineer()
@@ -102,9 +103,10 @@ if __name__ == "__main__":
     # Get recommendations
     try:
         recommendations = agri_system.get_recommendations_with_safe_save(
-            input_data, days_ahead=3, save_file=True
+            input_data, days_ahead=3, save_file=True,last_data_date=last_date
         )
         print(recommendations)
+        
         
     except Exception as e:
         print(f"\n❌ Error generating recommendations: {str(e)}")

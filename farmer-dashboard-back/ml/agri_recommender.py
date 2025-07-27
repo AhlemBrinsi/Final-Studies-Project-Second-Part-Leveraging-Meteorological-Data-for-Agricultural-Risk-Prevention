@@ -28,7 +28,6 @@ import pickle
 import joblib
 from tensorflow.keras.models import load_model
 
-
 from model_utils import load_lstm_model, load_classification_model, focal_loss_fn
 from models import OptimizedTemperatureMinLSTM, OptimizedTemperatureMaxLSTM, OptimizedHumidityMinLSTM, HumidityMaxLSTM, ImprovedSlidingWindowModel
 
@@ -490,25 +489,196 @@ class AgriculturalRecommendationSystem:
             except Exception as e:
                 print(f"❌ Error saving file: {str(e)}")
                 return False
-    
-        def get_recommendations_with_safe_save(self, input_data: np.ndarray, 
-                                             days_ahead: int = 3, 
-                                             save_file: bool = True,
-                                             filename: str = "agricultural_recommendations.txt") -> str:
-            """Generate recommendations and save with proper encoding"""
-            print(f"🌾 Generating agricultural recommendations for {days_ahead} days...")
         
+
+        def generate_recommendation_json(self, recommendations, output_path='recommendations.json'):
+            data = {
+                "generated_on": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "based_on_data_until": recommendations["based_on_date"],
+                "forecast_period_days": len(recommendations["daily"]),
+                "daily_forecast": [],
+                "weekly_summary": recommendations["summary"]
+            }
+
+            for day in recommendations["daily"]:
+                # Safely convert irrigation amount to float if possible
+                amount_value = day["irrigation"]["amount"]
+                try:
+                    amount_value = float(amount_value)
+                except (ValueError, TypeError):
+                    amount_value = str(amount_value)  # keep as string if not convertible
+
+                daily_entry = {
+                    "date": day["date"],
+                    "day": day["day_name"],
+                    "weather": day["weather"],
+                    "temperature": {
+                        "min": float(day["temp_min"]),
+                        "max": float(day["temp_max"])
+                    },
+                    "humidity": {
+                        "min": float(day["humidity_min"]),
+                        "max": float(day["humidity_max"])
+                    },
+                    "irrigation_advice": {
+                        "priority": day["irrigation"]["priority"],
+                        "frequency": day["irrigation"]["frequency"],
+                        "amount": amount_value,
+                        "best_timing": day["irrigation"]["best_timing"],
+                        "notes": day["irrigation"]["notes"]
+                    },
+                    "pest_disease_risk": {
+                        "overall_risk": day["pest"]["overall"],
+                        "pest_risk": day["pest"]["pest"],
+                        "disease_risk": day["pest"]["disease"],
+                        "threats": day["pest"]["threats"],
+                        "prevention": day["pest"]["prevention"]
+                    },
+                    "planting_field_activities": {
+                        "planting_conditions": day["planting"]["conditions"],
+                        "suitable_crops": day["planting"]["crops"]
+                    }
+                }
+                data["daily_forecast"].append(daily_entry)
+
+            # Save to JSON file
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=4, ensure_ascii=False)
+
+            print(f"✅ Recommendations saved to: {output_path}")
+
+                
+
+
+        def build_structured_recommendations(self, predictions: dict, days_ahead: int, base_date: datetime):
+            """
+            Build a structured dictionary suitable for JSON export from the predictions.
+            """
+            daily_list = []
+            for day in range(days_ahead):
+                day_date = base_date + timedelta(days=day + 1)
+                weather_cond = predictions['weather_condition'][day]
+                temp_max = predictions['temp_max'][day]
+                temp_min = predictions['temp_min'][day]
+                humidity_max = predictions['humidity_max'][day]
+                humidity_min = predictions['humidity_min'][day]
+                humidity_avg = (humidity_max + humidity_min) / 2
+
+                irrigation = self.analyze_irrigation_needs(weather_cond, humidity_min, humidity_max, temp_max)
+                pest = self.analyze_pest_disease_risk(weather_cond, humidity_max, temp_max, temp_min)
+                planting = self.recommend_planting_activities(weather_cond, temp_max, temp_min, humidity_avg)
+
+                daily_list.append({
+                    "date": day_date.strftime("%Y-%m-%d"),
+                    "day_name": day_date.strftime("%A"),
+                    "weather": weather_cond,
+                    "temp_max": temp_max,
+                    "temp_min": temp_min,
+                    "humidity_max": humidity_max,
+                    "humidity_min": humidity_min,
+                    "irrigation": {
+                        "priority": irrigation['priority'],
+                        "frequency": irrigation['frequency'],
+                        "amount": irrigation['amount'],
+                        "best_timing": irrigation['timing'],
+                        "notes": irrigation['notes'],
+                    },
+                    "pest": {
+                        "overall": pest['overall_risk'],
+                        "pest": pest['pest_risk'],
+                        "disease": pest['disease_risk'],
+                        "threats": pest['specific_threats'],
+                        "prevention": pest['preventive_measures'],
+                    },
+                    "planting": {
+                        "conditions": planting['planting_suitability'],
+                        "crops": planting['recommended_crops'],
+                    }
+                })
+
+            # Weekly summary (similar to your report summary)
+            weekly_summary = {
+                "avg_temp_max": float(np.mean(predictions['temp_max'])),
+                "avg_temp_min": float(np.mean(predictions['temp_min'])),
+                "avg_humidity": float(np.mean([np.mean(predictions['humidity_max']), np.mean(predictions['humidity_min'])])),
+                "rainy_days": sum(1 for cond in predictions['weather_condition'] if 'Rain' in cond or 'Drizzle' in cond),
+                # Add more summary info if needed
+            }
+
+            return {
+                "based_on_date": base_date.strftime("%Y-%m-%d"),
+                "daily": daily_list,
+                "summary": weekly_summary
+            }
+
+
+        def get_recommendations_with_safe_save(self,
+                                       input_data: np.ndarray,
+                                       days_ahead: int = 3,
+                                       save_file: bool = True,
+                                       filename: str = "agricultural_recommendations.txt",
+                                       last_data_date: datetime = None) -> str:
+    
+            print(f"🌾 Generating agricultural recommendations for {days_ahead} days...")
+
             # Get predictions from your models
             predictions = self.predict_weather(input_data, days_ahead)
-        
-            # Generate comprehensive report
+
+            # Use last_data_date or fallback to today
+            if last_data_date is None:
+                last_data_date = datetime.now()
+                print("⚠️ Warning: last_data_date not provided, using current date for forecasts")
+
+            # Generate predicted date list based on last_data_date
+            predicted_dates = [(last_data_date + timedelta(days=i+1)).strftime("%Y-%m-%d") for i in range(days_ahead)]
+
+            # Prepare the prediction log entry
+            prediction_entry = {
+                "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "based_on_data_up_to": last_data_date.strftime("%Y-%m-%d"),
+                "predicted_dates": predicted_dates,
+                "weather_condition": list(predictions["weather_condition"]),
+                "temp_max": [float(v) for v in list(predictions["temp_max"])],
+                "temp_min": [float(v) for v in list(predictions["temp_min"])],
+                "humidity_max": [float(v) for v in list(predictions["humidity_max"])],
+                "humidity_min": [float(v) for v in list(predictions["humidity_min"])],
+            }
+
+            # Append to JSON log file
+            json_filename = "weather_predictions.json"
+            try:
+                if os.path.exists(json_filename):
+                    with open(json_filename, "r", encoding="utf-8") as file:
+                        data = json.load(file)
+                else:
+                    data = []
+
+                data.append(prediction_entry)
+
+                with open(json_filename, "w", encoding="utf-8") as file:
+                    json.dump(data, file, indent=4, ensure_ascii=False)
+
+                print(f"✅ Appended predictions to '{json_filename}'")
+            except Exception as e:
+                print(f"❌ Error saving predictions to JSON: {e}")
+
+
+            # Build structured recommendations dictionary
+            structured_recommendations = self.build_structured_recommendations(predictions, days_ahead, last_data_date)
+
+            # Generate the detailed recommendations JSON file
+            self.generate_recommendation_json(structured_recommendations, output_path="agricultural_recommendations.json")
+
+            # Generate comprehensive recommendation report
             report = self.generate_comprehensive_report(predictions, days_ahead)
-        
-            # Save with proper encoding if requested
+
+            
+
+
+            # Save textual report
             if save_file:
-                # Try UTF-8 first, fall back to ASCII if needed
                 if not self.save_report(report, filename, encoding='utf-8', include_emojis=True):
                     print("🔄 Retrying with ASCII encoding...")
                     self.save_report(report, filename, encoding='ascii', include_emojis=False)
-        
+
             return report
