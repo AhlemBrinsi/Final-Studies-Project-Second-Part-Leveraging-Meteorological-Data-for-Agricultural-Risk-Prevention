@@ -1,11 +1,11 @@
 {
-    "generated_on": "2025-07-27 12:58:45",
-    "based_on_data_until": "2025-05-15",
+    "generated_on": "2025-07-27 19:25:13",
+    "based_on_data_until": "2025-06-15",
     "forecast_period_days": 3,
     "daily_forecast": [
         {
-            "date": "2025-05-16",
-            "day": "Friday",
+            "date": "2025-06-16",
+            "day": "Monday",
             "weather": "Cloudy ☁️",
             "temperature": {
                 "min": 17.861608505249023,
@@ -51,8 +51,8 @@
             }
         },
         {
-            "date": "2025-05-17",
-            "day": "Saturday",
+            "date": "2025-06-17",
+            "day": "Tuesday",
             "weather": "Light Drizzle 🌦",
             "temperature": {
                 "min": 17.82320213317871,
@@ -98,8 +98,8 @@
             }
         },
         {
-            "date": "2025-05-18",
-            "day": "Sunday",
+            "date": "2025-06-18",
+            "day": "Wednesday",
             "weather": "Cloudy ☁️",
             "temperature": {
                 "min": 17.863176345825195,

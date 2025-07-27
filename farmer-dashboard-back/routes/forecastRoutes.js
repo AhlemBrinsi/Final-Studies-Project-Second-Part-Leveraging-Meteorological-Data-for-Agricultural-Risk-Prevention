@@ -133,4 +133,25 @@ router.get('/latest', async (req, res) => {
   }
 });
 
+
+router.post('/recommendations', (req, res) => {
+  const inputData = req.body.input_data;
+  const lastDataDate = req.body.last_data_date || null;
+
+  const python = spawn('python', ['ml/predict.py', JSON.stringify(inputData), lastDataDate]);
+
+  let result = '';
+  python.stdout.on('data', (data) => {
+    result += data.toString();
+  });
+
+  python.stderr.on('data', (data) => {
+    console.error(`stderr: ${data}`);
+  });
+
+  python.on('close', (code) => {
+    res.send(result);
+  });
+});
+
 export default router;

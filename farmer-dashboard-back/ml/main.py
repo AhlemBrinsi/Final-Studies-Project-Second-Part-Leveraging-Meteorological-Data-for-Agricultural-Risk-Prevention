@@ -10,7 +10,7 @@ if __name__ == "__main__":
     from datetime import datetime
 
     # Load raw data
-    df = pd.read_csv("test_data.csv")
+    df = pd.read_csv("test_data2.csv")
     
     # Get the last date from your data
     # Assuming your CSV has a 'date' column
