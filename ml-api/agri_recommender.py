@@ -27,9 +27,37 @@ import json
 import pickle
 import joblib
 from tensorflow.keras.models import load_model
+from db import weather_col, recommendation_col
+
 
 from model_utils import load_lstm_model, load_classification_model, focal_loss_fn
 from models import OptimizedTemperatureMinLSTM, OptimizedTemperatureMaxLSTM, OptimizedHumidityMinLSTM, HumidityMaxLSTM, ImprovedSlidingWindowModel
+
+
+import numpy as np
+from datetime import datetime
+
+# ⬇️ Utility function to convert NumPy types to Python native types
+def convert_numpy_types(obj):
+    """
+    Recursively convert NumPy data types to native Python types.
+    """
+    if isinstance(obj, dict):
+        return {k: convert_numpy_types(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_numpy_types(i) for i in obj]
+    elif isinstance(obj, (np.integer, np.int32, np.int64)):
+        return int(obj)
+    elif isinstance(obj, (np.floating, np.float32, np.float64)):
+        return float(obj)
+    elif isinstance(obj, (np.bool_)):
+        return bool(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    else:
+        return obj
+
+
 
 class AgriculturalRecommendationSystem:
         def __init__(self):
@@ -491,80 +519,6 @@ class AgriculturalRecommendationSystem:
                 return False
         
 
-        def generate_recommendation_json(self, recommendations, output_path='agricultural_recommendations.json'):
-            new_entry = {
-                "generated_on": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "based_on_data_until": recommendations["based_on_date"],
-                "forecast_period_days": len(recommendations["daily"]),
-                "daily_forecast": [],
-                "weekly_summary": recommendations["summary"]
-            }
-
-            for day in recommendations["daily"]:
-                # Safely convert irrigation amount to float if possible
-                amount_value = day["irrigation"]["amount"]
-                try:
-                    amount_value = float(amount_value)
-                except (ValueError, TypeError):
-                    amount_value = str(amount_value)
-
-                daily_entry = {
-                    "date": day["date"],
-                    "day": day["day_name"],
-                    "weather": day["weather"],
-                    "temperature": {
-                        "min": float(day["temp_min"]),
-                        "max": float(day["temp_max"])
-                    },
-                    "humidity": {
-                        "min": float(day["humidity_min"]),
-                        "max": float(day["humidity_max"])
-                    },
-                    "irrigation_advice": {
-                        "priority": day["irrigation"]["priority"],
-                        "frequency": day["irrigation"]["frequency"],
-                        "amount": amount_value,
-                        "best_timing": day["irrigation"]["best_timing"],
-                        "notes": day["irrigation"]["notes"]
-                    },
-                    "pest_disease_risk": {
-                        "overall_risk": day["pest"]["overall"],
-                        "pest_risk": day["pest"]["pest"],
-                        "disease_risk": day["pest"]["disease"],
-                        "threats": day["pest"]["threats"],
-                        "prevention": day["pest"]["prevention"]
-                    },
-                    "planting_field_activities": {
-                        "planting_conditions": day["planting"]["conditions"],
-                        "suitable_crops": day["planting"]["crops"]
-                    }
-                }
-                new_entry["daily_forecast"].append(daily_entry)
-
-            # Load existing recommendations if file exists
-            if os.path.exists(output_path):
-                try:
-                    with open(output_path, "r", encoding="utf-8") as f:
-                        existing_data = json.load(f)
-                        if not isinstance(existing_data, list):
-                            existing_data = [existing_data]
-                except Exception as e:
-                    print(f"⚠️ Warning: Failed to load existing recommendations, starting fresh. Error: {e}")
-                    existing_data = []
-            else:
-                existing_data = []
-
-            # Append the new entry
-            existing_data.append(new_entry)
-
-            # Save all to file
-            with open(output_path, 'w', encoding='utf-8') as f:
-                json.dump(existing_data, f, indent=4, ensure_ascii=False)
-
-            print(f"✅ Appended recommendation to: {output_path}")
-                
-
-
         def build_structured_recommendations(self, predictions: dict, days_ahead: int, base_date: datetime):
             """
             Build a structured dictionary suitable for JSON export from the predictions.
@@ -627,13 +581,82 @@ class AgriculturalRecommendationSystem:
             }
 
 
+
+        def generate_recommendation_json(self, recommendations, output_path='agricultural_recommendations.json'):
+            new_entry = {
+                "generated_on": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "based_on_data_until": recommendations["based_on_date"],
+                "forecast_period_days": len(recommendations["daily"]),
+                "daily_forecast": [],
+                "weekly_summary": recommendations["summary"]
+            }
+
+            for day in recommendations["daily"]:
+                try:
+                    amount_value = float(day["irrigation"]["amount"])
+                except (ValueError, TypeError):
+                    amount_value = str(day["irrigation"]["amount"])
+
+                daily_entry = {
+                    "date": day["date"],
+                    "day": day["day_name"],
+                    "weather": str(day["weather"]),
+                    "temperature": {
+                        "min": float(day["temp_min"]),
+                        "max": float(day["temp_max"])
+                    },
+                    "humidity": {
+                        "min": float(day["humidity_min"]),
+                        "max": float(day["humidity_max"])
+                    },
+                    "irrigation_advice": {
+                        "priority": str(day["irrigation"]["priority"]),
+                        "frequency": str(day["irrigation"]["frequency"]),
+                        "amount": amount_value,
+                        "best_timing": str(day["irrigation"]["best_timing"]),
+                        "notes": str(day["irrigation"]["notes"])
+                    },
+                    "pest_disease_risk": {
+                        "overall_risk": str(day["pest"]["overall"]),
+                        "pest_risk": str(day["pest"]["pest"]),
+                        "disease_risk": str(day["pest"]["disease"]),
+                        "threats": day["pest"]["threats"],
+                        "prevention": day["pest"]["prevention"]
+                    },
+                    "planting_field_activities": {
+                        "planting_conditions": str(day["planting"]["conditions"]),
+                        "suitable_crops": day["planting"]["crops"]
+                    }
+                }
+                new_entry["daily_forecast"].append(daily_entry)
+
+            if os.path.exists(output_path):
+                try:
+                    with open(output_path, "r", encoding="utf-8") as f:
+                        existing_data = json.load(f)
+                        if not isinstance(existing_data, list):
+                            existing_data = [existing_data]
+                except Exception as e:
+                    print(f"⚠️ Warning: Failed to load existing recommendations, starting fresh. Error: {e}")
+                    existing_data = []
+            else:
+                existing_data = []
+
+            existing_data.append(new_entry)
+
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(existing_data, f, indent=4, ensure_ascii=False)
+
+            print(f"✅ Appended recommendation to: {output_path}")
+
+
         def get_recommendations_with_safe_save(self,
-                                       input_data: np.ndarray,
-                                       days_ahead: int = 3,
-                                       save_file: bool = True,
-                                       filename: str = "agricultural_recommendations.txt",
-                                       last_data_date: datetime = None) -> str:
-    
+                                            input_data: np.ndarray,
+                                            days_ahead: int = 3,
+                                            save_file: bool = True,
+                                            filename: str = "agricultural_recommendations.txt",
+                                            last_data_date: datetime = None) -> str:
+            
             print(f"🌾 Generating agricultural recommendations for {days_ahead} days...")
 
             # Get predictions from your models
@@ -647,7 +670,7 @@ class AgriculturalRecommendationSystem:
             # Generate predicted date list based on last_data_date
             predicted_dates = [(last_data_date + timedelta(days=i+1)).strftime("%Y-%m-%d") for i in range(days_ahead)]
 
-            # Prepare the prediction log entry
+            # Prepare the prediction log entry with native Python floats
             prediction_entry = {
                 "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "based_on_data_up_to": last_data_date.strftime("%Y-%m-%d"),
@@ -659,12 +682,24 @@ class AgriculturalRecommendationSystem:
                 "humidity_min": [float(v) for v in list(predictions["humidity_min"])],
             }
 
-            # Append to JSON log file
+            # Save weather predictions to MongoDB, capture inserted_id
+            inserted_result = weather_col.insert_one(prediction_entry)
+            # Convert MongoDB ObjectId to string for JSON compatibility
+            prediction_entry["_id"] = str(inserted_result.inserted_id)
+
+            print("✅ Saved weather predictions to MongoDB")
+
             json_filename = "weather_predictions.json"
             try:
                 if os.path.exists(json_filename):
                     with open(json_filename, "r", encoding="utf-8") as file:
-                        data = json.load(file)
+                        try:
+                            data = json.load(file)
+                            if not isinstance(data, list):
+                                data = [data]
+                        except json.JSONDecodeError as decode_err:
+                            print(f"⚠️ JSON decode error: {decode_err} — resetting file.")
+                            data = []
                 else:
                     data = []
 
@@ -677,18 +712,20 @@ class AgriculturalRecommendationSystem:
             except Exception as e:
                 print(f"❌ Error saving predictions to JSON: {e}")
 
-
             # Build structured recommendations dictionary
             structured_recommendations = self.build_structured_recommendations(predictions, days_ahead, last_data_date)
 
             # Generate the detailed recommendations JSON file
             self.generate_recommendation_json(structured_recommendations, output_path="agricultural_recommendations.json")
 
+            # Convert any numpy types in structured_recommendations to native Python types before inserting to MongoDB
+            cleaned_recommendations = convert_numpy_types(structured_recommendations)
+
+            recommendation_col.insert_one(cleaned_recommendations)
+            print("✅ Saved agricultural recommendations to MongoDB")
+
             # Generate comprehensive recommendation report
             report = self.generate_comprehensive_report(predictions, days_ahead)
-
-            
-
 
             # Save textual report
             if save_file:
