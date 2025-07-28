@@ -491,8 +491,8 @@ class AgriculturalRecommendationSystem:
                 return False
         
 
-        def generate_recommendation_json(self, recommendations, output_path='recommendations.json'):
-            data = {
+        def generate_recommendation_json(self, recommendations, output_path='agricultural_recommendations.json'):
+            new_entry = {
                 "generated_on": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "based_on_data_until": recommendations["based_on_date"],
                 "forecast_period_days": len(recommendations["daily"]),
@@ -506,7 +506,7 @@ class AgriculturalRecommendationSystem:
                 try:
                     amount_value = float(amount_value)
                 except (ValueError, TypeError):
-                    amount_value = str(amount_value)  # keep as string if not convertible
+                    amount_value = str(amount_value)
 
                 daily_entry = {
                     "date": day["date"],
@@ -539,14 +539,29 @@ class AgriculturalRecommendationSystem:
                         "suitable_crops": day["planting"]["crops"]
                     }
                 }
-                data["daily_forecast"].append(daily_entry)
+                new_entry["daily_forecast"].append(daily_entry)
 
-            # Save to JSON file
+            # Load existing recommendations if file exists
+            if os.path.exists(output_path):
+                try:
+                    with open(output_path, "r", encoding="utf-8") as f:
+                        existing_data = json.load(f)
+                        if not isinstance(existing_data, list):
+                            existing_data = [existing_data]
+                except Exception as e:
+                    print(f"⚠️ Warning: Failed to load existing recommendations, starting fresh. Error: {e}")
+                    existing_data = []
+            else:
+                existing_data = []
+
+            # Append the new entry
+            existing_data.append(new_entry)
+
+            # Save all to file
             with open(output_path, 'w', encoding='utf-8') as f:
-                json.dump(data, f, indent=4, ensure_ascii=False)
+                json.dump(existing_data, f, indent=4, ensure_ascii=False)
 
-            print(f"✅ Recommendations saved to: {output_path}")
-
+            print(f"✅ Appended recommendation to: {output_path}")
                 
 
 

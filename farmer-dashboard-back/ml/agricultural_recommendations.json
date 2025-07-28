@@ -1,154 +1,463 @@
-{
-    "generated_on": "2025-07-27 19:25:13",
-    "based_on_data_until": "2025-06-15",
-    "forecast_period_days": 3,
-    "daily_forecast": [
-        {
-            "date": "2025-06-16",
-            "day": "Monday",
-            "weather": "Cloudy ☁️",
-            "temperature": {
-                "min": 17.861608505249023,
-                "max": 26.114154815673828
+[
+    {
+        "generated_on": "2025-07-28 12:33:01",
+        "based_on_data_until": "2025-05-31",
+        "forecast_period_days": 3,
+        "daily_forecast": [
+            {
+                "date": "2025-06-01",
+                "day": "Sunday",
+                "weather": "Cloudy ☁️",
+                "temperature": {
+                    "min": 19.1103458404541,
+                    "max": 28.45210838317871
+                },
+                "humidity": {
+                    "min": 45.592952728271484,
+                    "max": 87.82795715332031
+                },
+                "irrigation_advice": {
+                    "priority": "medium",
+                    "frequency": "reduced",
+                    "amount": "moderate",
+                    "best_timing": "morning",
+                    "notes": [
+                        "High humidity - reduce watering frequency"
+                    ]
+                },
+                "pest_disease_risk": {
+                    "overall_risk": "high",
+                    "pest_risk": "medium",
+                    "disease_risk": "high",
+                    "threats": [
+                        "Fungal diseases",
+                        "Bacterial infections"
+                    ],
+                    "prevention": [
+                        "Improve air circulation",
+                        "Apply preventive fungicides",
+                        "Monitor for early symptoms"
+                    ]
+                },
+                "planting_field_activities": {
+                    "planting_conditions": "excellent",
+                    "suitable_crops": [
+                        "tomatoes",
+                        "beans",
+                        "corn",
+                        "lettuce",
+                        "carrots",
+                        "potatoes"
+                    ]
+                }
             },
-            "humidity": {
-                "min": 47.23558807373047,
-                "max": 87.8392333984375
+            {
+                "date": "2025-06-02",
+                "day": "Monday",
+                "weather": "Partly Clear 🌤/⛅",
+                "temperature": {
+                    "min": 19.157550811767578,
+                    "max": 27.797910690307617
+                },
+                "humidity": {
+                    "min": 41.33700180053711,
+                    "max": 88.2789535522461
+                },
+                "irrigation_advice": {
+                    "priority": "medium",
+                    "frequency": "reduced",
+                    "amount": "moderate",
+                    "best_timing": "morning",
+                    "notes": [
+                        "High humidity - reduce watering frequency"
+                    ]
+                },
+                "pest_disease_risk": {
+                    "overall_risk": "high",
+                    "pest_risk": "medium",
+                    "disease_risk": "high",
+                    "threats": [
+                        "Fungal diseases",
+                        "Bacterial infections"
+                    ],
+                    "prevention": [
+                        "Improve air circulation",
+                        "Apply preventive fungicides",
+                        "Monitor for early symptoms"
+                    ]
+                },
+                "planting_field_activities": {
+                    "planting_conditions": "excellent",
+                    "suitable_crops": [
+                        "tomatoes",
+                        "beans",
+                        "corn",
+                        "lettuce",
+                        "wheat",
+                        "carrots",
+                        "potatoes"
+                    ]
+                }
             },
-            "irrigation_advice": {
-                "priority": "medium",
-                "frequency": "reduced",
-                "amount": "moderate",
-                "best_timing": "morning",
-                "notes": [
-                    "High humidity - reduce watering frequency"
-                ]
-            },
-            "pest_disease_risk": {
-                "overall_risk": "high",
-                "pest_risk": "medium",
-                "disease_risk": "high",
-                "threats": [
-                    "Fungal diseases",
-                    "Bacterial infections"
-                ],
-                "prevention": [
-                    "Improve air circulation",
-                    "Apply preventive fungicides",
-                    "Monitor for early symptoms"
-                ]
-            },
-            "planting_field_activities": {
-                "planting_conditions": "excellent",
-                "suitable_crops": [
-                    "tomatoes",
-                    "beans",
-                    "corn",
-                    "lettuce",
-                    "carrots",
-                    "potatoes"
-                ]
+            {
+                "date": "2025-06-03",
+                "day": "Tuesday",
+                "weather": "Partly Clear 🌤/⛅",
+                "temperature": {
+                    "min": 19.12648582458496,
+                    "max": 26.78731918334961
+                },
+                "humidity": {
+                    "min": 50.75881576538086,
+                    "max": 89.8540267944336
+                },
+                "irrigation_advice": {
+                    "priority": "medium",
+                    "frequency": "reduced",
+                    "amount": "moderate",
+                    "best_timing": "morning",
+                    "notes": [
+                        "High humidity - reduce watering frequency"
+                    ]
+                },
+                "pest_disease_risk": {
+                    "overall_risk": "high",
+                    "pest_risk": "medium",
+                    "disease_risk": "high",
+                    "threats": [
+                        "Fungal diseases",
+                        "Bacterial infections"
+                    ],
+                    "prevention": [
+                        "Improve air circulation",
+                        "Apply preventive fungicides",
+                        "Monitor for early symptoms"
+                    ]
+                },
+                "planting_field_activities": {
+                    "planting_conditions": "excellent",
+                    "suitable_crops": [
+                        "tomatoes",
+                        "beans",
+                        "corn",
+                        "lettuce",
+                        "potatoes"
+                    ]
+                }
             }
-        },
-        {
-            "date": "2025-06-17",
-            "day": "Tuesday",
-            "weather": "Light Drizzle 🌦",
-            "temperature": {
-                "min": 17.82320213317871,
-                "max": 28.795230865478516
-            },
-            "humidity": {
-                "min": 47.41090774536133,
-                "max": 84.36015319824219
-            },
-            "irrigation_advice": {
-                "priority": "medium",
-                "frequency": "reduced",
-                "amount": "moderate",
-                "best_timing": "morning",
-                "notes": [
-                    "High humidity - reduce watering frequency"
-                ]
-            },
-            "pest_disease_risk": {
-                "overall_risk": "high",
-                "pest_risk": "medium",
-                "disease_risk": "high",
-                "threats": [
-                    "Fungal diseases",
-                    "Bacterial infections"
-                ],
-                "prevention": [
-                    "Improve air circulation",
-                    "Apply preventive fungicides",
-                    "Monitor for early symptoms"
-                ]
-            },
-            "planting_field_activities": {
-                "planting_conditions": "excellent",
-                "suitable_crops": [
-                    "tomatoes",
-                    "beans",
-                    "corn",
-                    "lettuce",
-                    "carrots",
-                    "potatoes"
-                ]
-            }
-        },
-        {
-            "date": "2025-06-18",
-            "day": "Wednesday",
-            "weather": "Cloudy ☁️",
-            "temperature": {
-                "min": 17.863176345825195,
-                "max": 28.71194839477539
-            },
-            "humidity": {
-                "min": 46.882442474365234,
-                "max": 85.72270965576172
-            },
-            "irrigation_advice": {
-                "priority": "medium",
-                "frequency": "reduced",
-                "amount": "moderate",
-                "best_timing": "morning",
-                "notes": [
-                    "High humidity - reduce watering frequency"
-                ]
-            },
-            "pest_disease_risk": {
-                "overall_risk": "high",
-                "pest_risk": "medium",
-                "disease_risk": "high",
-                "threats": [
-                    "Fungal diseases",
-                    "Bacterial infections"
-                ],
-                "prevention": [
-                    "Improve air circulation",
-                    "Apply preventive fungicides",
-                    "Monitor for early symptoms"
-                ]
-            },
-            "planting_field_activities": {
-                "planting_conditions": "excellent",
-                "suitable_crops": [
-                    "tomatoes",
-                    "beans",
-                    "corn",
-                    "lettuce",
-                    "carrots",
-                    "potatoes"
-                ]
-            }
+        ],
+        "weekly_summary": {
+            "avg_temp_max": 27.679113388061523,
+            "avg_temp_min": 19.13146209716797,
+            "avg_humidity": 67.27494812011719,
+            "rainy_days": 0
         }
-    ],
-    "weekly_summary": {
-        "avg_temp_max": 27.873779296875,
-        "avg_temp_min": 17.849328994750977,
-        "avg_humidity": 66.5751724243164,
-        "rainy_days": 1
+    },
+    {
+        "generated_on": "2025-07-28 12:33:48",
+        "based_on_data_until": "2025-06-15",
+        "forecast_period_days": 3,
+        "daily_forecast": [
+            {
+                "date": "2025-06-16",
+                "day": "Monday",
+                "weather": "Partly Clear 🌤/⛅",
+                "temperature": {
+                    "min": 22.22347068786621,
+                    "max": 30.46829605102539
+                },
+                "humidity": {
+                    "min": 44.8387565612793,
+                    "max": 91.21812438964844
+                },
+                "irrigation_advice": {
+                    "priority": "medium",
+                    "frequency": "reduced",
+                    "amount": "moderate",
+                    "best_timing": "morning",
+                    "notes": [
+                        "High humidity - reduce watering frequency"
+                    ]
+                },
+                "pest_disease_risk": {
+                    "overall_risk": "high",
+                    "pest_risk": "medium",
+                    "disease_risk": "high",
+                    "threats": [
+                        "Fungal diseases",
+                        "Bacterial infections"
+                    ],
+                    "prevention": [
+                        "Improve air circulation",
+                        "Apply preventive fungicides",
+                        "Monitor for early symptoms"
+                    ]
+                },
+                "planting_field_activities": {
+                    "planting_conditions": "moderate",
+                    "suitable_crops": [
+                        "tomatoes",
+                        "lettuce",
+                        "corn",
+                        "beans",
+                        "carrots",
+                        "potatoes"
+                    ]
+                }
+            },
+            {
+                "date": "2025-06-17",
+                "day": "Tuesday",
+                "weather": "Partly Clear 🌤/⛅",
+                "temperature": {
+                    "min": 22.222646713256836,
+                    "max": 32.49553680419922
+                },
+                "humidity": {
+                    "min": 40.52525329589844,
+                    "max": 87.77610778808594
+                },
+                "irrigation_advice": {
+                    "priority": "medium",
+                    "frequency": "reduced",
+                    "amount": "moderate",
+                    "best_timing": "morning",
+                    "notes": [
+                        "High humidity - reduce watering frequency"
+                    ]
+                },
+                "pest_disease_risk": {
+                    "overall_risk": "high",
+                    "pest_risk": "medium",
+                    "disease_risk": "high",
+                    "threats": [
+                        "Fungal diseases",
+                        "Bacterial infections"
+                    ],
+                    "prevention": [
+                        "Improve air circulation",
+                        "Apply preventive fungicides",
+                        "Monitor for early symptoms"
+                    ]
+                },
+                "planting_field_activities": {
+                    "planting_conditions": "moderate",
+                    "suitable_crops": [
+                        "tomatoes",
+                        "lettuce",
+                        "corn",
+                        "wheat",
+                        "beans",
+                        "carrots",
+                        "potatoes"
+                    ]
+                }
+            },
+            {
+                "date": "2025-06-18",
+                "day": "Wednesday",
+                "weather": "Cloudy ☁️",
+                "temperature": {
+                    "min": 22.207714080810547,
+                    "max": 30.179738998413086
+                },
+                "humidity": {
+                    "min": 47.2309455871582,
+                    "max": 89.17432403564453
+                },
+                "irrigation_advice": {
+                    "priority": "medium",
+                    "frequency": "reduced",
+                    "amount": "moderate",
+                    "best_timing": "morning",
+                    "notes": [
+                        "High humidity - reduce watering frequency"
+                    ]
+                },
+                "pest_disease_risk": {
+                    "overall_risk": "high",
+                    "pest_risk": "medium",
+                    "disease_risk": "high",
+                    "threats": [
+                        "Fungal diseases",
+                        "Bacterial infections"
+                    ],
+                    "prevention": [
+                        "Improve air circulation",
+                        "Apply preventive fungicides",
+                        "Monitor for early symptoms"
+                    ]
+                },
+                "planting_field_activities": {
+                    "planting_conditions": "moderate",
+                    "suitable_crops": [
+                        "tomatoes",
+                        "lettuce",
+                        "corn",
+                        "beans",
+                        "carrots",
+                        "potatoes"
+                    ]
+                }
+            }
+        ],
+        "weekly_summary": {
+            "avg_temp_max": 31.0478572845459,
+            "avg_temp_min": 22.21794319152832,
+            "avg_humidity": 66.79391479492188,
+            "rainy_days": 0
+        }
+    },
+    {
+        "generated_on": "2025-07-28 12:35:00",
+        "based_on_data_until": "2025-06-30",
+        "forecast_period_days": 3,
+        "daily_forecast": [
+            {
+                "date": "2025-07-01",
+                "day": "Tuesday",
+                "weather": "Cloudy ☁️",
+                "temperature": {
+                    "min": 22.99969482421875,
+                    "max": 30.498018264770508
+                },
+                "humidity": {
+                    "min": 46.38782501220703,
+                    "max": 92.23963928222656
+                },
+                "irrigation_advice": {
+                    "priority": "medium",
+                    "frequency": "reduced",
+                    "amount": "moderate",
+                    "best_timing": "morning",
+                    "notes": [
+                        "High humidity - reduce watering frequency"
+                    ]
+                },
+                "pest_disease_risk": {
+                    "overall_risk": "high",
+                    "pest_risk": "medium",
+                    "disease_risk": "high",
+                    "threats": [
+                        "Fungal diseases",
+                        "Bacterial infections"
+                    ],
+                    "prevention": [
+                        "Improve air circulation",
+                        "Apply preventive fungicides",
+                        "Monitor for early symptoms"
+                    ]
+                },
+                "planting_field_activities": {
+                    "planting_conditions": "moderate",
+                    "suitable_crops": [
+                        "tomatoes",
+                        "lettuce",
+                        "corn",
+                        "beans",
+                        "carrots",
+                        "potatoes"
+                    ]
+                }
+            },
+            {
+                "date": "2025-07-02",
+                "day": "Wednesday",
+                "weather": "Cloudy ☁️",
+                "temperature": {
+                    "min": 22.98552131652832,
+                    "max": 31.303264617919922
+                },
+                "humidity": {
+                    "min": 52.90461349487305,
+                    "max": 92.62748718261719
+                },
+                "irrigation_advice": {
+                    "priority": "medium",
+                    "frequency": "reduced",
+                    "amount": "moderate",
+                    "best_timing": "morning",
+                    "notes": [
+                        "High humidity - reduce watering frequency"
+                    ]
+                },
+                "pest_disease_risk": {
+                    "overall_risk": "high",
+                    "pest_risk": "medium",
+                    "disease_risk": "high",
+                    "threats": [
+                        "Fungal diseases",
+                        "Bacterial infections"
+                    ],
+                    "prevention": [
+                        "Improve air circulation",
+                        "Apply preventive fungicides",
+                        "Monitor for early symptoms"
+                    ]
+                },
+                "planting_field_activities": {
+                    "planting_conditions": "moderate",
+                    "suitable_crops": [
+                        "lettuce",
+                        "corn",
+                        "rice",
+                        "beans",
+                        "potatoes"
+                    ]
+                }
+            },
+            {
+                "date": "2025-07-03",
+                "day": "Thursday",
+                "weather": "Cloudy ☁️",
+                "temperature": {
+                    "min": 22.973918914794922,
+                    "max": 32.461143493652344
+                },
+                "humidity": {
+                    "min": 54.12785720825195,
+                    "max": 93.01841735839844
+                },
+                "irrigation_advice": {
+                    "priority": "medium",
+                    "frequency": "reduced",
+                    "amount": "moderate",
+                    "best_timing": "morning",
+                    "notes": [
+                        "High humidity - reduce watering frequency"
+                    ]
+                },
+                "pest_disease_risk": {
+                    "overall_risk": "high",
+                    "pest_risk": "medium",
+                    "disease_risk": "high",
+                    "threats": [
+                        "Fungal diseases",
+                        "Bacterial infections"
+                    ],
+                    "prevention": [
+                        "Improve air circulation",
+                        "Apply preventive fungicides",
+                        "Monitor for early symptoms"
+                    ]
+                },
+                "planting_field_activities": {
+                    "planting_conditions": "moderate",
+                    "suitable_crops": [
+                        "lettuce",
+                        "corn",
+                        "rice",
+                        "beans",
+                        "potatoes"
+                    ]
+                }
+            }
+        ],
+        "weekly_summary": {
+            "avg_temp_max": 31.420808792114258,
+            "avg_temp_min": 22.986379623413086,
+            "avg_humidity": 71.88430786132812,
+            "rainy_days": 0
+        }
     }
-}
+]
