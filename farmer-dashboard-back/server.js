@@ -6,8 +6,8 @@ import uploadRoutes from './routes/uploadRoutes.js';
 import supportRoutes from "./routes/supportRoutes.js";
 import LogsRoutes from "./routes/LogsRoutes.js"
 import AnalyticsRoutes from './routes/AnalyticsRoutes.js';
-import weatherRoutes from './routes/weatherRoutes.js'
-import forecastRoutes from './routes/forecastRoutes.js'
+import weatherRoutes from './routes/weatherRoutes.js';
+import recommendationRoutes from './routes/recommendationRoutes.js'; 
 
 import path from 'path';
 import cors from 'cors';
@@ -29,10 +29,9 @@ app.use("/api/support", supportRoutes);
 app.use("/api/logs", LogsRoutes);
 app.use('/api/analytics', AnalyticsRoutes);
 app.use('/api/weather', weatherRoutes); 
-app.use('/api/forecast', forecastRoutes); 
-
-
+app.use('/api/recommendations', recommendationRoutes); 
 //app.use("/api/profile", profileRoutes);
+
 
 // Connect to DB
 //mongoose.connect(process.env.MONGO_URL, {

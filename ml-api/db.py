@@ -1,4 +1,3 @@
-# db.py (recommended for clean structure)
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
@@ -10,6 +9,6 @@ load_dotenv()
 client = MongoClient(os.getenv("MONGODB_URI"))
 
 # Choose database and collections
-db = client['users']
+db = client['dashboard']
 weather_col = db['weather_predictions']
 recommendation_col = db['recommendations']
