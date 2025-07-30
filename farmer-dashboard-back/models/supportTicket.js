@@ -10,4 +10,5 @@ const SupportTicketSchema = new mongoose.Schema({
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
 }, { timestamps: true });
 
-export default mongoose.model("SupportTicket", SupportTicketSchema);
+const SupportTicket = mongoose.models.SupportTicket || mongoose.model('SupportTicket', SupportTicketSchema);
+export default SupportTicket;

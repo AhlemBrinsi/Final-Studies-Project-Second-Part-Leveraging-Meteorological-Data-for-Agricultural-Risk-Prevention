@@ -21,7 +21,6 @@ import WeatherDashboard from './pages/WeatherDashboard.jsx';
 import Recommendations from './pages/Recommendations';
 
 
-
 export default function App() {
   return (
     <Router>

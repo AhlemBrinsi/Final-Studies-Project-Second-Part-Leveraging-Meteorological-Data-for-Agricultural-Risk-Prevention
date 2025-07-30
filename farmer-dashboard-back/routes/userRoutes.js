@@ -40,8 +40,8 @@ const upload = multer({ storage });
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
-    user: process.env.EMAIL_USER,      // Add to .env
-    pass: process.env.EMAIL_PASS,      // Add to .env (use app password, not your Gmail password!)
+    user: process.env.EMAIL_USER,      
+    pass: process.env.EMAIL_PASS,    
   },
 });
 
@@ -52,7 +52,7 @@ router.post('/register', async (req, res) => {
   console.log("📥 Incoming registration:", { username, email, password, role, ownerCode });
 
   try {
-    // Check if username or email already exists
+    
     const existingUser = await User.findOne({
       $or: [{ email }, { username }]
     });

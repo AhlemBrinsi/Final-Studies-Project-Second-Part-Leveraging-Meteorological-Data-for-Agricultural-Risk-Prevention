@@ -9,4 +9,6 @@ const articleSchema = new mongoose.Schema({
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
 }, { timestamps: true });
 
-export default mongoose.model('article', articleSchema);
+const Article = mongoose.models.article || mongoose.model('article', articleSchema);
+
+export default Article;

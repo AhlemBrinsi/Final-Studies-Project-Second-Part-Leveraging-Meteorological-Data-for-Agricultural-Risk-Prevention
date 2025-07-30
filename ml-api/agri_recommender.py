@@ -29,7 +29,6 @@ import joblib
 from tensorflow.keras.models import load_model
 from db import weather_col, recommendation_col
 
-
 from model_utils import load_lstm_model, load_classification_model, focal_loss_fn
 from models import OptimizedTemperatureMinLSTM, OptimizedTemperatureMaxLSTM, OptimizedHumidityMinLSTM, HumidityMaxLSTM, ImprovedSlidingWindowModel
 
@@ -91,6 +90,11 @@ class AgriculturalRecommendationSystem:
             # Add attribute to store the last date from input data
             self.last_input_date = None
         
+
+        def set_socketio(self, socketio_instance):
+            self.socketio = socketio_instance
+
+
         def set_last_input_date(self, last_date):
             """
             Set the last date from the input data to calculate correct forecast dates
