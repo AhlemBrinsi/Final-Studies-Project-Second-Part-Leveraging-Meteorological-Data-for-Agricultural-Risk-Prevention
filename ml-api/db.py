@@ -12,3 +12,5 @@ client = MongoClient(os.getenv("MONGODB_URI"))
 db = client['dashboard']
 weather_col = db['weather_predictions']
 recommendation_col = db['recommendations']
+test_data_col = db['test_data']
+

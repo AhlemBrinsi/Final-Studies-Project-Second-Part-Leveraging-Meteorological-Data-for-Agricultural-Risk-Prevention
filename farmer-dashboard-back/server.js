@@ -8,6 +8,7 @@ import LogsRoutes from "./routes/LogsRoutes.js"
 import AnalyticsRoutes from './routes/AnalyticsRoutes.js';
 import weatherRoutes from './routes/weatherRoutes.js';
 import recommendationRoutes from './routes/recommendationRoutes.js'; 
+import testDataRoutes from './routes/testDataRoutes.js';
 
 import path from 'path';
 import cors from 'cors';
@@ -30,6 +31,7 @@ app.use("/api/logs", LogsRoutes);
 app.use('/api/analytics', AnalyticsRoutes);
 app.use('/api/weather', weatherRoutes); 
 app.use('/api/recommendations', recommendationRoutes); 
+app.use('/api', testDataRoutes); 
 //app.use("/api/profile", profileRoutes);
 
 

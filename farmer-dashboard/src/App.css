@@ -3,8 +3,8 @@
   margin: 0 auto;
   text-align: center;
   height: 100%;
-  overflow-x: hidden; /* disable horizontal scroll */
-  overflow-y: auto;   /* enable vertical scroll */
+  overflow-x: hidden; 
+  overflow-y: auto;  
 }
 
 .logo {

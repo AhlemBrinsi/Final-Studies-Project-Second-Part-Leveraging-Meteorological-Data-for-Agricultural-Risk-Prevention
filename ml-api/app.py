@@ -6,6 +6,8 @@ from weather_engineer import WeatherFeatureEngineer
 from agri_recommender import AgriculturalRecommendationSystem
 import os
 import traceback
+from db import test_data_col
+
 
 app = Flask(__name__)
 
@@ -31,8 +33,15 @@ def predict():
         file = request.files['file']
         if file.filename.endswith('.csv'):
             df = pd.read_csv(file)
+            # Save raw test data to MongoDB
+            df_dict = df.to_dict(orient='records') 
+            test_data_col.insert_many(df_dict)
+
         elif file.filename.endswith('.json'):
             df = pd.read_json(file)
+            # Save raw test data to MongoDB
+            df_dict = df.to_dict(orient='records') 
+            test_data_col.insert_many(df_dict)
         else:
             return jsonify({"error": "Unsupported file format"}), 400
 

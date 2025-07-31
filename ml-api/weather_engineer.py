@@ -372,22 +372,22 @@ class WeatherFeatureEngineer:
         
             # 🧭 Map weather_code to human-readable weather_condition
             weather_conditions = {
-                0: "Clear Sky",
-                1: "Partly Clear",
-                2: "Partly Clear", 
-                3: "Cloudy",
-                45: "Cloudy",
-                48: "Cloudy",
-                51: "Light Drizzle",
-                53: "Moderate Drizzle",
-                55: "Heavy Drizzle",
-                61: "Light Rain",
-                63: "Moderate Rain",
-                65: "Heavy Rain",
-                71: "Light Rain",  # Treat snow as rain for consistency
-                73: "Moderate Rain",
-                75: "Heavy Rain",
-                95: "Heavy Rain"  # Thunderstorm as heavy rain
+                0: "Clear Sky ☀️",
+                1: "Mainly Clear 🌤",
+                2: "Partly Cloudy ⛅",
+                3: "Cloudy ☁️",
+                45: "Fog 🌫",
+                48: "Fog 🌫",
+                51: "Light Drizzle 🌦",
+                53: "Moderate Drizzle 🌧",
+                55: "Heavy Drizzle 🌧",
+                61: "Light Rain 🌦",
+                63: "Moderate Rain 🌧",
+                65: "Heavy Rain 🌧",
+                71: "Light Snow ❄️",
+                73: "Moderate Snow ❄️",
+                75: "Heavy Snow ❄️",
+                95: "Thunderstorm ⛈"
             }
         
             if 'weather_code' in df.columns:
