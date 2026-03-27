@@ -4,8 +4,8 @@ This repository contains the **second part of the Final Studies Project**, which
 
 ## Table of Contents
 
-1. [Project Overview](#project-overview)  
-2. [Project Structure](#project-structure)  
+1. [Dashboard Overview](#project-overview)  
+2. [Dashboard Structure](#project-structure)  
 3. [System Architecture](#system-architecture)  
    - [Key Components](#key-components)  
 4. [Features](#features)  
