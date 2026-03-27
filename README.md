@@ -2,6 +2,17 @@
 
 This repository contains the **second part of the Final Studies Project**, which focuses on developing a **demonstration dashboard for agricultural risk prevention**. The project integrates **weather forecasting machine learning models** with a user-friendly interface, showcasing how predictive analytics can support farming decisions.
 
+## Table of Contents
+
+1. [Project Overview](#project-overview)  
+2. [Project Structure](#project-structure)  
+3. [System Architecture](#system-architecture)  
+   - [Key Components](#key-components)  
+4. [Features](#features)  
+5. [Implementation Results](#implementation-results)  
+6. [Limitations](#limitations)  
+7. [Technologies Used](#technologies-used)
+
 ---
 
 ## Project Overview
