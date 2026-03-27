@@ -1,4 +1,4 @@
-# Final Studies Project - Second Part: Agricultural Risk Prevention Dashboard
+# Final Studies Project - Second Part: Leveraging Meteorological Data for Agricultural Risk Prevention
 
 This repository contains the **second part of the Final Studies Project**, which focuses on developing a **demonstration dashboard for agricultural risk prevention**. The project integrates **weather forecasting machine learning models** with a user-friendly interface, showcasing how predictive analytics can support farming decisions.
 
