@@ -15,7 +15,7 @@ This repository contains the **second part of the Final Studies Project**, which
 
 ---
 
-## Project Overview
+## Dashboard Overview
 
 The dashboard acts as a **proof-of-concept** to demonstrate how weather prediction models can be used in real-life agriculture. It provides interactive features for both **clients (farmers)** and **admins**, including weather forecasts, personalized recommendations, educational content, and system management tools. 
 
@@ -23,7 +23,7 @@ This project also serves as a **prototype for future integration** with the comp
 
 ---
 
-## Project Structure
+## Dashboard Structure
 
 - **farmer-dashboard**: Front-end application built with **React** and **Vite.js** for a responsive and interactive user experience.
 - **farmer-dashboard-back**: Back-end server using **Node.js** and **Express.js**, handling API requests, authentication, and business logic.
